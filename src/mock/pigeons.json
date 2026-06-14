@@ -1,0 +1,86 @@
+[
+  {
+    "id": "1",
+    "ringNumber": "2024-CN-001",
+    "featherColor": "雨点",
+    "gender": "雄",
+    "pedigree": "父系：比利时 Janssen 血系；母系：荷兰 Snel 血系，短距速度型"
+  },
+  {
+    "id": "2",
+    "ringNumber": "2024-CN-002",
+    "featherColor": "灰",
+    "gender": "雌",
+    "pedigree": "父系：德国 Herman 血系；母系：比利时 De Rauw 血系，中距全能"
+  },
+  {
+    "id": "3",
+    "ringNumber": "2024-CN-003",
+    "featherColor": "红轮",
+    "gender": "雄",
+    "pedigree": "父系：荷兰 Koopman 血系；母系：比利时 Busschaert 血系"
+  },
+  {
+    "id": "4",
+    "ringNumber": "2024-CN-004",
+    "featherColor": "石板",
+    "gender": "雌",
+    "pedigree": "父系：比利时 Verkerk 血系；母系：荷兰 Janssen 血系，长距耐力型"
+  },
+  {
+    "id": "5",
+    "ringNumber": "2024-CN-005",
+    "featherColor": "花头",
+    "gender": "雄",
+    "pedigree": "父系：比利时 Cools 血系；母系：德国 Wegge 血系，700公里级"
+  },
+  {
+    "id": "6",
+    "ringNumber": "2024-CN-006",
+    "featherColor": "深雨点",
+    "gender": "雌",
+    "pedigree": "父系：荷兰 Snel 血系；母系：比利时 Janssen 血系，500公里稳定"
+  },
+  {
+    "id": "7",
+    "ringNumber": "2024-CN-007",
+    "featherColor": "灰白条",
+    "gender": "雄",
+    "pedigree": "父系：比利时 De Rauw 血系；母系：荷兰 Koopman 血系"
+  },
+  {
+    "id": "8",
+    "ringNumber": "2024-CN-008",
+    "featherColor": "浅雨点",
+    "gender": "雌",
+    "pedigree": "父系：德国 Herman 血系；母系：比利时 Busschaert 血系，300公里快速"
+  },
+  {
+    "id": "9",
+    "ringNumber": "2024-CN-009",
+    "featherColor": "绛",
+    "gender": "雄",
+    "pedigree": "父系：比利时 Verkerk 血系；母系：荷兰 Janssen 血系，1000公里级"
+  },
+  {
+    "id": "10",
+    "ringNumber": "2024-CN-010",
+    "featherColor": "灰",
+    "gender": "雌",
+    "pedigree": "父系：荷兰 Koopman 血系；母系：比利时 Cools 血系，中短距全能"
+  },
+  {
+    "id": "11",
+    "ringNumber": "2024-CN-011",
+    "featherColor": "雨点白条",
+    "gender": "雄",
+    "pedigree": "父系：比利时 Janssen 血系；母系：德国 Wegge 血系，600公里级"
+  },
+  {
+    "id": "12",
+    "ringNumber": "2024-CN-012",
+    "featherColor": "花",
+    "gender": "雌",
+    "pedigree": "父系：荷兰 Snel 血系；母系：比利时 De Rauw 血系，400公里快速"
+  }
+]
