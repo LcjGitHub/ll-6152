@@ -13,6 +13,7 @@ import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import type { Pigeon } from '@/types/pigeon'
 import { validateRingNumberExists, findPigeonByRingNumber } from '@/utils/pigeonValidation'
+import { useFormHandler } from '@/composables/useFormHandler'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,28 +77,28 @@ function navigateToPigeon(ringNumber: string) {
   }
 }
 
+const pairingFormHandler = useFormHandler({
+  formRef,
+  formData: form,
+  successMessage: '配对记录已保存',
+  extraValidate: () => {
+    if (!validateRingNumberExists(form.partnerRingNumber)) {
+      ringNumberError.value = '该环号未在档案中找到'
+      return false
+    }
+    ringNumberError.value = ''
+    return true
+  },
+})
+
 async function handleSubmit() {
-  try {
-    await formRef.value?.validate()
-  } catch {
-    return
-  }
-
-  if (!validateRingNumberExists(form.partnerRingNumber)) {
-    ringNumberError.value = '该环号未在档案中找到'
-    return
-  }
-
-  ringNumberError.value = ''
-  pairingStore.addRecord(
-    pigeonId.value,
-    form.date,
-    form.partnerRingNumber.trim(),
-  )
-  Message.success('配对记录已保存')
-  form.date = ''
-  form.partnerRingNumber = ''
-  formRef.value?.clearValidate()
+  await pairingFormHandler.submit(() => {
+    pairingStore.addRecord(
+      pigeonId.value,
+      form.date,
+      form.partnerRingNumber.trim(),
+    )
+  })
 }
 
 function handleDelete(recordId: string) {
@@ -145,42 +146,38 @@ const offspringColumns: TableColumnData[] = [
   { title: '出生日期', dataIndex: 'birthDate', width: 160 },
 ]
 
+const offspringFormHandler = useFormHandler({
+  formRef: offspringFormRef,
+  formData: offspringForm,
+  successMessage: '子代记录已保存',
+  extraValidate: () => {
+    if (!offspringForm.ringNumber || !offspringForm.ringNumber.trim()) {
+      return false
+    }
+    if (!offspringForm.birthDate) {
+      return false
+    }
+    return true
+  },
+})
+
 async function handleOffspringSubmit() {
-  let valid = true
-  try {
-    await offspringFormRef.value?.validate()
-  } catch {
-    valid = false
-  }
+  await offspringFormHandler.submit(() => {
+    const partner = pigeons.find(
+      (p) => p.ringNumber === offspringForm.partnerRingNumber.trim(),
+    )
+    const currentPigeon = pigeon.value!
+    const isFather = currentPigeon.gender === '雄'
+    const fatherId = isFather ? pigeonId.value : (partner?.id ?? '')
+    const motherId = isFather ? (partner?.id ?? '') : pigeonId.value
 
-  if (!offspringForm.ringNumber || !offspringForm.ringNumber.trim()) {
-    valid = false
-  }
-  if (!offspringForm.birthDate) {
-    valid = false
-  }
-
-  if (!valid) return
-
-  const partner = pigeons.find(
-    (p) => p.ringNumber === offspringForm.partnerRingNumber.trim(),
-  )
-  const currentPigeon = pigeon.value!
-  const isFather = currentPigeon.gender === '雄'
-  const fatherId = isFather ? pigeonId.value : (partner?.id ?? '')
-  const motherId = isFather ? (partner?.id ?? '') : pigeonId.value
-
-  offspringStore.addRecord(
-    offspringForm.ringNumber.trim(),
-    offspringForm.birthDate,
-    fatherId,
-    motherId,
-  )
-  Message.success('子代记录已保存')
-  offspringForm.ringNumber = ''
-  offspringForm.birthDate = ''
-  offspringForm.partnerRingNumber = ''
-  offspringFormRef.value?.clearValidate()
+    offspringStore.addRecord(
+      offspringForm.ringNumber.trim(),
+      offspringForm.birthDate,
+      fatherId,
+      motherId,
+    )
+  })
 }
 
 const healthRecords = computed(() =>
@@ -215,34 +212,30 @@ const healthColumns: TableColumnData[] = [
   { title: '备注', dataIndex: 'remark' },
 ]
 
+const healthFormHandler = useFormHandler({
+  formRef: healthFormRef,
+  formData: healthForm,
+  successMessage: '防疫记录已保存',
+  extraValidate: () => {
+    if (!healthForm.vaccineDate) {
+      return false
+    }
+    if (!healthForm.vaccineName || !healthForm.vaccineName.trim()) {
+      return false
+    }
+    return true
+  },
+})
+
 async function handleHealthSubmit() {
-  let valid = true
-  try {
-    await healthFormRef.value?.validate()
-  } catch {
-    valid = false
-  }
-
-  if (!healthForm.vaccineDate) {
-    valid = false
-  }
-  if (!healthForm.vaccineName || !healthForm.vaccineName.trim()) {
-    valid = false
-  }
-
-  if (!valid) return
-
-  healthRecordStore.addRecord(
-    healthForm.vaccineDate,
-    healthForm.vaccineName.trim(),
-    healthForm.remark.trim(),
-    pigeonId.value,
-  )
-  Message.success('防疫记录已保存')
-  healthForm.vaccineDate = ''
-  healthForm.vaccineName = ''
-  healthForm.remark = ''
-  healthFormRef.value?.clearValidate()
+  await healthFormHandler.submit(() => {
+    healthRecordStore.addRecord(
+      healthForm.vaccineDate,
+      healthForm.vaccineName.trim(),
+      healthForm.remark.trim(),
+      pigeonId.value,
+    )
+  })
 }
 
 const remarkContent = ref('')
