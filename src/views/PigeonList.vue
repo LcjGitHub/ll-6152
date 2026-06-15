@@ -14,17 +14,33 @@ const keyword = ref('')
 const onlyFavorite = ref(false)
 const pigeons = pigeonsData as Pigeon[]
 
-const fuse = new Fuse(pigeons, {
-  keys: ['ringNumber', 'featherColor', 'gender', 'pedigree'],
-  threshold: 0.4,
+const genderFilter = ref('')
+const featherColorFilter = ref('')
+
+const genderOptions = computed(() => {
+  const set = new Set(pigeons.map((p) => p.gender))
+  return ['', ...Array.from(set)]
+})
+
+const featherColorOptions = computed(() => {
+  const set = new Set(pigeons.map((p) => p.featherColor))
+  return ['', ...Array.from(set)]
 })
 
 const filteredPigeons = computed(() => {
-  let result: Pigeon[]
+  let result = pigeons
+  if (genderFilter.value) {
+    result = result.filter((p) => p.gender === genderFilter.value)
+  }
+  if (featherColorFilter.value) {
+    result = result.filter((p) => p.featherColor === featherColorFilter.value)
+  }
   const q = keyword.value.trim()
-  if (!q) {
-    result = pigeons
-  } else {
+  if (q) {
+    const fuse = new Fuse(result, {
+      keys: ['ringNumber', 'featherColor', 'gender', 'pedigree'],
+      threshold: 0.4,
+    })
     result = fuse.search(q).map((r) => r.item)
   }
   if (onlyFavorite.value) {
@@ -36,7 +52,7 @@ const filteredPigeons = computed(() => {
 const subtitle = computed(() => {
   const total = pigeons.length
   const filtered = filteredPigeons.value.length
-  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value
+  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || genderFilter.value !== '' || featherColorFilter.value !== ''
   return hasFilter ? `显示 ${filtered} / 共 ${total} 羽` : `共 ${total} 羽`
 })
 
@@ -63,18 +79,48 @@ function toggleFavorite(id: string) {
     <a-page-header title="鸽子列表" :subtitle="subtitle" />
 
     <a-card :bordered="false" class="search-card">
-      <a-space>
-        <a-input-search
-          v-model="keyword"
-          placeholder="搜索环号、羽色、性别、血统…"
-          allow-clear
-          style="width: 360px"
-        />
-        <a-space size="mini" align="center">
-          <a-switch v-model="onlyFavorite" type="round" />
-          <span class="switch-label">
-            {{ onlyFavorite ? '仅看收藏' : '全部' }}
-          </span>
+      <a-space direction="vertical" fill>
+        <a-space>
+          <a-input-search
+            v-model="keyword"
+            placeholder="搜索环号、羽色、性别、血统…"
+            allow-clear
+            style="width: 360px"
+          />
+          <a-space size="mini" align="center">
+            <a-switch v-model="onlyFavorite" type="round" />
+            <span class="switch-label">
+              {{ onlyFavorite ? '仅看收藏' : '全部' }}
+            </span>
+          </a-space>
+        </a-space>
+        <a-space>
+          <a-select
+            v-model="genderFilter"
+            placeholder="性别"
+            allow-clear
+            style="width: 140px"
+          >
+            <a-option :value="''">全部性别</a-option>
+            <a-option
+              v-for="g in genderOptions.filter((v) => v !== '')"
+              :key="g"
+              :value="g"
+            >{{ g }}</a-option>
+          </a-select>
+          <a-select
+            v-model="featherColorFilter"
+            placeholder="羽色"
+            allow-clear
+            style="width: 140px"
+          >
+            <a-option :value="''">全部羽色</a-option>
+            <a-option
+              v-for="c in featherColorOptions.filter((v) => v !== '')"
+              :key="c"
+              :value="c"
+            >{{ c }}</a-option>
+          </a-select>
         </a-space>
       </a-space>
     </a-card>
