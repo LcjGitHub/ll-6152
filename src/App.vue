@@ -3,7 +3,7 @@
     <a-layout class="layout">
       <a-layout-header class="header">
         <div class="header-inner">
-          <router-link to="/" class="logo">赛鸽档案</router-link>
+          <router-link to="/" class="logo" active-class="">赛鸽档案</router-link>
           <nav class="nav">
             <router-link to="/" class="nav-link">鸽子列表</router-link>
             <router-link to="/race-results" class="nav-link">比赛成绩</router-link>
