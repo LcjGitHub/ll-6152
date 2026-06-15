@@ -52,7 +52,7 @@ const filteredPigeons = computed(() => {
 const subtitle = computed(() => {
   const total = pigeons.length
   const filtered = filteredPigeons.value.length
-  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || genderFilter.value !== '' || featherColorFilter.value !== ''
+  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || !!genderFilter.value || !!featherColorFilter.value
   return hasFilter ? `显示 ${filtered} / 共 ${total} 羽` : `共 ${total} 羽`
 })
 
@@ -101,7 +101,7 @@ function toggleFavorite(id: string) {
             allow-clear
             style="width: 140px"
           >
-            <a-option :value="''">全部性别</a-option>
+            <a-option :value="''">全部</a-option>
             <a-option
               v-for="g in genderOptions.filter((v) => v !== '')"
               :key="g"
@@ -114,7 +114,7 @@ function toggleFavorite(id: string) {
             allow-clear
             style="width: 140px"
           >
-            <a-option :value="''">全部羽色</a-option>
+            <a-option :value="''">全部</a-option>
             <a-option
               v-for="c in featherColorOptions.filter((v) => v !== '')"
               :key="c"
