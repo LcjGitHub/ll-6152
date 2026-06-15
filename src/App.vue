@@ -7,6 +7,7 @@
           <nav class="nav">
             <router-link to="/" class="nav-link" exact-active-class="router-link-active">鸽子列表</router-link>
             <router-link to="/race-results" class="nav-link" exact-active-class="router-link-active">比赛成绩</router-link>
+            <router-link to="/pairing-summary" class="nav-link" exact-active-class="router-link-active">配对汇总</router-link>
           </nav>
         </div>
       </a-layout-header>

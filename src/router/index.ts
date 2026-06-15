@@ -18,6 +18,11 @@ const router = createRouter({
       name: 'raceResults',
       component: () => import('@/views/RaceResultList.vue'),
     },
+    {
+      path: '/pairing-summary',
+      name: 'pairingSummary',
+      component: () => import('@/views/PairingSummary.vue'),
+    },
   ],
 })
 
