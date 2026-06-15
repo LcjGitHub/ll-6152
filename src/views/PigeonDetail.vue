@@ -154,7 +154,18 @@ const healthForm = reactive({
 
 const healthRules = {
   vaccineDate: [{ required: true, message: '请选择防疫日期' }],
-  vaccineName: [{ required: true, message: '请输入疫苗名称' }],
+  vaccineName: [
+    {
+      required: true,
+      validator: (value: string, cb: (error?: string) => void) => {
+        if (!value || !value.trim()) {
+          cb('请输入疫苗名称')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
 }
 
 const healthColumns: TableColumnData[] = [
@@ -164,11 +175,21 @@ const healthColumns: TableColumnData[] = [
 ]
 
 async function handleHealthSubmit() {
+  let valid = true
   try {
     await healthFormRef.value?.validate()
   } catch {
-    return
+    valid = false
   }
+
+  if (!healthForm.vaccineDate) {
+    valid = false
+  }
+  if (!healthForm.vaccineName || !healthForm.vaccineName.trim()) {
+    valid = false
+  }
+
+  if (!valid) return
 
   healthRecordStore.addRecord(
     healthForm.vaccineDate,
