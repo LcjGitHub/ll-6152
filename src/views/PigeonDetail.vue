@@ -3,19 +3,32 @@ import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import type { FormInstance, TableColumnData } from '@arco-design/web-vue'
+import { IconStar, IconStarFill } from '@arco-design/web-vue/es/icon'
 import pigeonsData from '@/mock/pigeons.json'
 import { usePairingStore } from '@/stores/pairing'
+import { useFavoriteStore } from '@/stores/favorite'
 import type { Pigeon } from '@/types/pigeon'
 
 const route = useRoute()
 const router = useRouter()
 const pairingStore = usePairingStore()
+const favoriteStore = useFavoriteStore()
 const formRef = ref<FormInstance>()
 
 const pigeons = pigeonsData as Pigeon[]
 const pigeonId = computed(() => route.params.id as string)
 
 const pigeon = computed(() => pigeons.find((p) => p.id === pigeonId.value))
+
+const isFavorited = computed(() =>
+  pigeonId.value ? favoriteStore.isFavorite(pigeonId.value) : false,
+)
+
+function toggleFavorite() {
+  if (pigeonId.value) {
+    favoriteStore.toggleFavorite(pigeonId.value)
+  }
+}
 
 const pairingRecords = computed(() =>
   pairingStore.getByPigeonId(pigeonId.value),
@@ -66,7 +79,17 @@ function goBack() {
       :title="pigeon.ringNumber"
       :subtitle="`${pigeon.featherColor} · ${pigeon.gender}`"
       @back="goBack"
-    />
+    >
+      <template #extra>
+        <a-button :type="isFavorited ? 'primary' : 'outline'" @click="toggleFavorite">
+          <template #icon>
+            <icon-star-fill v-if="isFavorited" />
+            <icon-star v-else />
+          </template>
+          {{ isFavorited ? '已收藏' : '收藏' }}
+        </a-button>
+      </template>
+    </a-page-header>
 
     <a-card title="基本信息" :bordered="false" class="section">
       <a-descriptions :column="2" bordered>
