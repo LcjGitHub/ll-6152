@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Message, Modal } from '@arco-design/web-vue'
 import type { FormInstance, TableColumnData } from '@arco-design/web-vue'
@@ -226,10 +226,12 @@ const remarkContent = ref('')
 function loadRemark() {
   if (pigeonId.value) {
     remarkContent.value = remarkStore.getRemarkContent(pigeonId.value)
+  } else {
+    remarkContent.value = ''
   }
 }
 
-loadRemark()
+watch(pigeonId, loadRemark, { immediate: true })
 
 function handleSaveRemark() {
   if (pigeonId.value) {
@@ -295,7 +297,7 @@ function goBack() {
         allow-clear
       />
       <div class="remark-actions">
-        <a-button type="primary" @click="handleSaveRemark">保存</a-button>
+        <a-button type="primary" aria-label="保存鸽子备注" @click="handleSaveRemark">保存</a-button>
       </div>
     </a-card>
 

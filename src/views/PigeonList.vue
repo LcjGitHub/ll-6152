@@ -137,7 +137,10 @@ function toggleFavorite(id: string) {
         :scroll="{ x: 900 }"
       >
         <template #remark="{ record }">
-          <a-tag :color="remarkStore.hasRemark(record.id) ? 'arcoblue' : 'gray'">
+          <a-tag
+            :color="remarkStore.hasRemark(record.id) ? 'arcoblue' : 'gray'"
+            :aria-label="remarkStore.hasRemark(record.id) ? '该鸽子有备注' : '该鸽子无备注'"
+          >
             {{ remarkStore.hasRemark(record.id) ? '有' : '无' }}
           </a-tag>
         </template>
