@@ -10,6 +10,7 @@ import { useFavoriteStore } from '@/stores/favorite'
 import { useOffspringStore } from '@/stores/offspring'
 import { useHealthRecordStore } from '@/stores/healthRecord'
 import { useRemarkStore } from '@/stores/remark'
+import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import type { Pigeon } from '@/types/pigeon'
 import { validateRingNumberExists, findPigeonByRingNumber } from '@/utils/pigeonValidation'
 
@@ -20,6 +21,7 @@ const favoriteStore = useFavoriteStore()
 const offspringStore = useOffspringStore()
 const healthRecordStore = useHealthRecordStore()
 const remarkStore = useRemarkStore()
+const browseHistoryStore = useBrowseHistoryStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
 const healthFormRef = ref<FormInstance>()
@@ -254,6 +256,12 @@ function loadRemark() {
 }
 
 watch(pigeonId, loadRemark, { immediate: true })
+
+watch(pigeonId, (id) => {
+  if (id) {
+    browseHistoryStore.record(id)
+  }
+}, { immediate: true })
 
 function handleSaveRemark() {
   if (pigeonId.value) {

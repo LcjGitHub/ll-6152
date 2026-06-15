@@ -8,10 +8,12 @@ import pigeonsData from '@/mock/pigeons.json'
 import type { Pigeon } from '@/types/pigeon'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useRemarkStore } from '@/stores/remark'
+import { useBrowseHistoryStore } from '@/stores/browseHistory'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
 const remarkStore = useRemarkStore()
+const browseHistoryStore = useBrowseHistoryStore()
 const keyword = ref('')
 const onlyFavorite = ref(false)
 const pigeons = pigeonsData as Pigeon[]
@@ -75,6 +77,15 @@ function goDetail(id: string) {
 function toggleFavorite(id: string) {
   favoriteStore.toggleFavorite(id)
 }
+
+const browseHistoryItems = computed(() =>
+  browseHistoryStore.pigeonIds
+    .map((id) => {
+      const p = pigeons.find((item) => item.id === id)
+      return p ? { id: p.id, ringNumber: p.ringNumber } : null
+    })
+    .filter(Boolean) as { id: string; ringNumber: string }[]
+)
 </script>
 
 <template>
@@ -126,6 +137,23 @@ function toggleFavorite(id: string) {
           </a-select>
         </a-space>
       </a-space>
+    </a-card>
+
+    <a-card v-if="browseHistoryItems.length > 0" :bordered="false" class="browse-card">
+      <template #title>
+        <span class="browse-title">最近浏览</span>
+      </template>
+      <div class="browse-tags">
+        <a-tag
+          v-for="item in browseHistoryItems"
+          :key="item.id"
+          color="arcoblue"
+          class="browse-tag"
+          @click="goDetail(item.id)"
+        >
+          {{ item.ringNumber }}
+        </a-tag>
+      </div>
     </a-card>
 
     <a-card :bordered="false">
@@ -206,5 +234,29 @@ function toggleFavorite(id: string) {
 
 .favorite-icon-wrapper:focus-visible {
   box-shadow: 0 0 0 2px rgb(var(--primary-3));
+}
+
+.browse-card {
+  padding: 4px 0;
+}
+
+.browse-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.browse-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.browse-tag {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.browse-tag:hover {
+  opacity: 0.8;
 }
 </style>
