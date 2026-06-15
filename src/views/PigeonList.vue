@@ -33,6 +33,13 @@ const filteredPigeons = computed(() => {
   return result
 })
 
+const subtitle = computed(() => {
+  const total = pigeons.length
+  const filtered = filteredPigeons.value.length
+  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value
+  return hasFilter ? `显示 ${filtered} / 共 ${total} 羽` : `共 ${total} 羽`
+})
+
 const columns: TableColumnData[] = [
   { title: '环号', dataIndex: 'ringNumber', width: 160 },
   { title: '羽色', dataIndex: 'featherColor', width: 100 },
@@ -53,7 +60,7 @@ function toggleFavorite(id: string) {
 
 <template>
   <div class="page">
-    <a-page-header title="鸽子列表" :subtitle="`共 ${pigeons.length} 羽`" />
+    <a-page-header title="鸽子列表" :subtitle="subtitle" />
 
     <a-card :bordered="false" class="search-card">
       <a-space>
@@ -63,12 +70,12 @@ function toggleFavorite(id: string) {
           allow-clear
           style="width: 360px"
         />
-        <a-switch
-          v-model="onlyFavorite"
-          type="round"
-          checked-text="仅看收藏"
-          unchecked-text="全部"
-        />
+        <a-space size="mini" align="center">
+          <a-switch v-model="onlyFavorite" type="round" />
+          <span class="switch-label">
+            {{ onlyFavorite ? '仅看收藏' : '全部' }}
+          </span>
+        </a-space>
       </a-space>
     </a-card>
 
@@ -81,16 +88,28 @@ function toggleFavorite(id: string) {
         :scroll="{ x: 900 }"
       >
         <template #favorite="{ record }">
-          <icon-star-fill
-            v-if="favoriteStore.isFavorite(record.id)"
-            :style="{ fontSize: '18px', color: '#f7ba1e', cursor: 'pointer' }"
-            @click="toggleFavorite(record.id)"
-          />
-          <icon-star
-            v-else
-            :style="{ fontSize: '18px', color: '#c9cdd4', cursor: 'pointer' }"
-            @click="toggleFavorite(record.id)"
-          />
+          <a-tooltip
+            :content="favoriteStore.isFavorite(record.id) ? '取消收藏' : '加入收藏'"
+            :mini="true"
+          >
+            <span
+              role="button"
+              :aria-label="favoriteStore.isFavorite(record.id) ? '取消收藏' : '加入收藏'"
+              tabindex="0"
+              class="favorite-icon-wrapper"
+              @click="toggleFavorite(record.id)"
+              @keydown.enter.space.prevent="toggleFavorite(record.id)"
+            >
+              <icon-star-fill
+                v-if="favoriteStore.isFavorite(record.id)"
+                :style="{ fontSize: '18px', color: '#f7ba1e', cursor: 'pointer' }"
+              />
+              <icon-star
+                v-else
+                :style="{ fontSize: '18px', color: '#c9cdd4', cursor: 'pointer' }"
+              />
+            </span>
+          </a-tooltip>
         </template>
         <template #action="{ record }">
           <a-button type="text" size="small" @click="goDetail(record.id)">
@@ -111,5 +130,24 @@ function toggleFavorite(id: string) {
 
 .search-card {
   padding: 4px 0;
+}
+
+.switch-label {
+  font-size: 14px;
+  color: var(--color-text-2);
+  user-select: none;
+}
+
+.favorite-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.favorite-icon-wrapper:focus-visible {
+  box-shadow: 0 0 0 2px rgb(var(--primary-3));
 }
 </style>

@@ -77,9 +77,18 @@ function goBack() {
   <div v-if="pigeon" class="page">
     <a-page-header
       :title="pigeon.ringNumber"
-      :subtitle="`${pigeon.featherColor} · ${pigeon.gender}`"
       @back="goBack"
     >
+      <template #subtitle>
+        <span>{{ pigeon.featherColor }} · {{ pigeon.gender }} ·</span>
+        <span
+          :class="['fav-status', { 'fav-status--active': isFavorited }]"
+        >
+          <icon-star-fill v-if="isFavorited" class="fav-status-icon" />
+          <icon-star v-else class="fav-status-icon" />
+          {{ isFavorited ? '已收藏' : '未收藏' }}
+        </span>
+      </template>
       <template #extra>
         <a-button :type="isFavorited ? 'primary' : 'outline'" @click="toggleFavorite">
           <template #icon>
@@ -166,5 +175,22 @@ function goBack() {
 
 .section {
   margin-top: 0;
+}
+
+.fav-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  color: var(--color-text-3);
+}
+
+.fav-status--active {
+  color: #d3a012;
+  font-weight: 500;
+}
+
+.fav-status-icon {
+  margin-right: 4px;
+  font-size: 14px;
 }
 </style>
