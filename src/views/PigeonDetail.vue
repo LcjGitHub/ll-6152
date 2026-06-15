@@ -50,24 +50,15 @@ const form = reactive({
 
 const ringNumberError = ref('')
 
+watch(() => form.partnerRingNumber, () => {
+  if (ringNumberError.value) {
+    ringNumberError.value = ''
+  }
+})
+
 const rules = {
   date: [{ required: true, message: '请选择配对日期' }],
-  partnerRingNumber: [
-    { required: true, message: '请输入配对环号' },
-    {
-      validator: (value: string, cb: (error?: string) => void) => {
-        if (!value || !value.trim()) {
-          cb()
-          return
-        }
-        if (!validateRingNumberExists(value)) {
-          cb('该环号未在档案中找到')
-        } else {
-          cb()
-        }
-      },
-    },
-  ],
+  partnerRingNumber: [{ required: true, message: '请输入配对环号' }],
 }
 
 const recordColumns: TableColumnData[] = [
@@ -376,7 +367,10 @@ function goBack() {
       >
         <template #partnerRingNumber="{ record }">
           <template v-if="findPigeonByRingNumber(record.partnerRingNumber)">
-            <a-link @click="navigateToPigeon(record.partnerRingNumber)">
+            <a-link
+              :aria-label="`查看鸽子 ${record.partnerRingNumber} 详情`"
+              @click="navigateToPigeon(record.partnerRingNumber)"
+            >
               {{ record.partnerRingNumber }}
             </a-link>
           </template>
