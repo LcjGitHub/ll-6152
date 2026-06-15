@@ -7,9 +7,11 @@ import { IconStar, IconStarFill } from '@arco-design/web-vue/es/icon'
 import pigeonsData from '@/mock/pigeons.json'
 import type { Pigeon } from '@/types/pigeon'
 import { useFavoriteStore } from '@/stores/favorite'
+import { useRemarkStore } from '@/stores/remark'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
+const remarkStore = useRemarkStore()
 const keyword = ref('')
 const onlyFavorite = ref(false)
 const pigeons = pigeonsData as Pigeon[]
@@ -61,6 +63,7 @@ const columns: TableColumnData[] = [
   { title: '羽色', dataIndex: 'featherColor', width: 100 },
   { title: '性别', dataIndex: 'gender', width: 80 },
   { title: '血统简述', dataIndex: 'pedigree', ellipsis: true, tooltip: true },
+  { title: '备注', slotName: 'remark', width: 80, align: 'center' },
   { title: '收藏', slotName: 'favorite', width: 80, align: 'center' },
   { title: '操作', slotName: 'action', width: 100, fixed: 'right' },
 ]
@@ -133,6 +136,11 @@ function toggleFavorite(id: string) {
         row-key="id"
         :scroll="{ x: 900 }"
       >
+        <template #remark="{ record }">
+          <a-tag :color="remarkStore.hasRemark(record.id) ? 'arcoblue' : 'gray'">
+            {{ remarkStore.hasRemark(record.id) ? '有' : '无' }}
+          </a-tag>
+        </template>
         <template #favorite="{ record }">
           <a-tooltip
             :content="favoriteStore.isFavorite(record.id) ? '取消收藏' : '加入收藏'"

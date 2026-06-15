@@ -42,3 +42,10 @@ export interface HealthRecord {
   vaccineName: string
   remark: string
 }
+
+/** 鸽子备注 */
+export interface PigeonRemark {
+  pigeonId: string
+  content: string
+  updatedAt: string
+}

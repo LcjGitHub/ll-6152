@@ -9,6 +9,7 @@ import { usePairingStore } from '@/stores/pairing'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useOffspringStore } from '@/stores/offspring'
 import { useHealthRecordStore } from '@/stores/healthRecord'
+import { useRemarkStore } from '@/stores/remark'
 import type { Pigeon } from '@/types/pigeon'
 
 const route = useRoute()
@@ -17,6 +18,7 @@ const pairingStore = usePairingStore()
 const favoriteStore = useFavoriteStore()
 const offspringStore = useOffspringStore()
 const healthRecordStore = useHealthRecordStore()
+const remarkStore = useRemarkStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
 const healthFormRef = ref<FormInstance>()
@@ -219,6 +221,23 @@ async function handleHealthSubmit() {
   healthFormRef.value?.clearValidate()
 }
 
+const remarkContent = ref('')
+
+function loadRemark() {
+  if (pigeonId.value) {
+    remarkContent.value = remarkStore.getRemarkContent(pigeonId.value)
+  }
+}
+
+loadRemark()
+
+function handleSaveRemark() {
+  if (pigeonId.value) {
+    remarkStore.setRemark(pigeonId.value, remarkContent.value)
+    Message.success('备注已保存')
+  }
+}
+
 function goBack() {
   router.push('/')
 }
@@ -266,6 +285,18 @@ function goBack() {
           {{ pigeon.pedigree }}
         </a-descriptions-item>
       </a-descriptions>
+    </a-card>
+
+    <a-card title="备注" :bordered="false" class="section">
+      <a-textarea
+        v-model="remarkContent"
+        placeholder="请输入备注信息"
+        :auto-size="{ minRows: 4, maxRows: 8 }"
+        allow-clear
+      />
+      <div class="remark-actions">
+        <a-button type="primary" @click="handleSaveRemark">保存</a-button>
+      </div>
     </a-card>
 
     <a-card title="新增配对记录" :bordered="false" class="section">
@@ -449,5 +480,10 @@ function goBack() {
 .fav-status-icon {
   margin-right: 4px;
   font-size: 14px;
+}
+
+.remark-actions {
+  margin-top: 12px;
+  text-align: right;
 }
 </style>
