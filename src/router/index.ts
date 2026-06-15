@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'detail',
       component: () => import('@/views/PigeonDetail.vue'),
     },
+    {
+      path: '/race-results',
+      name: 'raceResults',
+      component: () => import('@/views/RaceResultList.vue'),
+    },
   ],
 })
 

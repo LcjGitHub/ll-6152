@@ -14,3 +14,13 @@ export interface PairingRecord {
   date: string
   partnerRingNumber: string
 }
+
+/** 比赛成绩 */
+export interface RaceResult {
+  id: string
+  raceName: string
+  raceDate: string
+  rank: number
+  distance: number
+  pigeonId: string
+}

@@ -4,6 +4,10 @@
       <a-layout-header class="header">
         <div class="header-inner">
           <router-link to="/" class="logo">赛鸽档案</router-link>
+          <nav class="nav">
+            <router-link to="/" class="nav-link">鸽子列表</router-link>
+            <router-link to="/race-results" class="nav-link">比赛成绩</router-link>
+          </nav>
         </div>
       </a-layout-header>
       <a-layout-content class="content">
@@ -41,6 +45,28 @@
 
 .logo:hover {
   color: rgb(var(--primary-6));
+}
+
+.nav {
+  margin-left: 32px;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--color-text-2);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: rgb(var(--primary-6));
+}
+
+.nav-link.router-link-active {
+  color: rgb(var(--primary-6));
+  font-weight: 500;
 }
 
 .content {
