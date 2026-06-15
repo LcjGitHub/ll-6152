@@ -81,7 +81,18 @@ const offspringForm = reactive({
 })
 
 const offspringRules = {
-  ringNumber: [{ required: true, message: '请输入子代环号' }],
+  ringNumber: [
+    {
+      required: true,
+      validator: (value: string, cb: (error?: string) => void) => {
+        if (!value || !value.trim()) {
+          cb('请输入子代环号')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
   birthDate: [{ required: true, message: '请选择出生日期' }],
 }
 
@@ -91,11 +102,22 @@ const offspringColumns: TableColumnData[] = [
 ]
 
 async function handleOffspringSubmit() {
+  let valid = true
   try {
-    await offspringFormRef.value?.validate()
+    const result = await offspringFormRef.value?.validate()
+    if (result === false) valid = false
   } catch {
-    return
+    valid = false
   }
+
+  if (!offspringForm.ringNumber || !offspringForm.ringNumber.trim()) {
+    valid = false
+  }
+  if (!offspringForm.birthDate) {
+    valid = false
+  }
+
+  if (!valid) return
 
   const partner = pigeons.find(
     (p) => p.ringNumber === offspringForm.partnerRingNumber.trim(),
@@ -208,7 +230,16 @@ function goBack() {
       />
     </a-card>
 
-    <a-card title="新增子代记录" :bordered="false" class="section">
+    <a-card title="子代列表" :bordered="false" class="section">
+      <a-empty v-if="offspringRecords.length === 0" description="暂无子代记录" />
+      <a-table
+        v-else
+        :columns="offspringColumns"
+        :data="offspringRecords"
+        :pagination="false"
+        row-key="id"
+      />
+      <a-divider />
       <a-form
         ref="offspringFormRef"
         :model="offspringForm"
@@ -232,7 +263,7 @@ function goBack() {
             style="width: 180px"
           />
         </a-form-item>
-        <a-form-item field="partnerRingNumber" label="配对对象编号">
+        <a-form-item field="partnerRingNumber" label="配对环号">
           <a-input
             v-model="offspringForm.partnerRingNumber"
             placeholder="输入配对对象环号"
@@ -244,17 +275,6 @@ function goBack() {
           <a-button type="primary" @click="handleOffspringSubmit">保存</a-button>
         </a-form-item>
       </a-form>
-    </a-card>
-
-    <a-card title="子代列表" :bordered="false" class="section">
-      <a-empty v-if="offspringRecords.length === 0" description="暂无子代记录" />
-      <a-table
-        v-else
-        :columns="offspringColumns"
-        :data="offspringRecords"
-        :pagination="false"
-        row-key="id"
-      />
     </a-card>
   </div>
 
