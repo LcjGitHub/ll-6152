@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Message } from '@arco-design/web-vue'
+import { Message, Modal } from '@arco-design/web-vue'
 import type { FormInstance, TableColumnData } from '@arco-design/web-vue'
 import { IconStar, IconStarFill } from '@arco-design/web-vue/es/icon'
 import pigeonsData from '@/mock/pigeons.json'
@@ -53,6 +53,7 @@ const rules = {
 const recordColumns: TableColumnData[] = [
   { title: '配对日期', dataIndex: 'date', width: 160 },
   { title: '配对环号', dataIndex: 'partnerRingNumber', width: 180 },
+  { title: '操作', width: 120, slotName: 'operation' },
 ]
 
 async function handleSubmit() {
@@ -71,6 +72,18 @@ async function handleSubmit() {
   form.date = ''
   form.partnerRingNumber = ''
   formRef.value?.clearValidate()
+}
+
+function handleDelete(recordId: string) {
+  Modal.confirm({
+    title: '确认删除',
+    content: '确定要删除这条配对记录吗？',
+    okButtonProps: { status: 'danger' },
+    onOk: () => {
+      pairingStore.deleteRecord(recordId)
+      Message.success('删除成功')
+    },
+  })
 }
 
 const offspringRecords = computed(() =>
@@ -291,7 +304,18 @@ function goBack() {
         :data="pairingRecords"
         :pagination="false"
         row-key="id"
-      />
+      >
+        <template #operation="{ record }">
+          <a-button
+            type="outline"
+            status="danger"
+            size="small"
+            @click="handleDelete(record.id)"
+          >
+            删除
+          </a-button>
+        </template>
+      </a-table>
     </a-card>
 
     <a-card title="子代列表" :bordered="false" class="section">

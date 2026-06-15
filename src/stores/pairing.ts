@@ -29,6 +29,13 @@ export const usePairingStore = defineStore('pairing', {
         partnerRingNumber,
       })
     },
+    /** 按记录编号删除配对记录 */
+    deleteRecord(recordId: string) {
+      const index = this.records.findIndex((r) => r.id === recordId)
+      if (index > -1) {
+        this.records.splice(index, 1)
+      }
+    },
   },
   persist: true,
 })
