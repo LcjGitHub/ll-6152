@@ -11,6 +11,7 @@ import { useOffspringStore } from '@/stores/offspring'
 import { useHealthRecordStore } from '@/stores/healthRecord'
 import { useRemarkStore } from '@/stores/remark'
 import type { Pigeon } from '@/types/pigeon'
+import { validateRingNumberExists, findPigeonByRingNumber } from '@/utils/pigeonValidation'
 
 const route = useRoute()
 const router = useRouter()
@@ -47,16 +48,40 @@ const form = reactive({
   partnerRingNumber: '',
 })
 
+const ringNumberError = ref('')
+
 const rules = {
   date: [{ required: true, message: '请选择配对日期' }],
-  partnerRingNumber: [{ required: true, message: '请输入配对环号' }],
+  partnerRingNumber: [
+    { required: true, message: '请输入配对环号' },
+    {
+      validator: (value: string, cb: (error?: string) => void) => {
+        if (!value || !value.trim()) {
+          cb()
+          return
+        }
+        if (!validateRingNumberExists(value)) {
+          cb('该环号未在档案中找到')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
 }
 
 const recordColumns: TableColumnData[] = [
   { title: '配对日期', dataIndex: 'date', width: 160 },
-  { title: '配对环号', dataIndex: 'partnerRingNumber', width: 180 },
+  { title: '配对环号', dataIndex: 'partnerRingNumber', width: 180, slotName: 'partnerRingNumber' },
   { title: '操作', width: 120, slotName: 'operation' },
 ]
+
+function navigateToPigeon(ringNumber: string) {
+  const pigeon = findPigeonByRingNumber(ringNumber)
+  if (pigeon) {
+    router.push(`/pigeon/${pigeon.id}`)
+  }
+}
 
 async function handleSubmit() {
   try {
@@ -65,6 +90,12 @@ async function handleSubmit() {
     return
   }
 
+  if (!validateRingNumberExists(form.partnerRingNumber)) {
+    ringNumberError.value = '该环号未在档案中找到'
+    return
+  }
+
+  ringNumberError.value = ''
   pairingStore.addRecord(
     pigeonId.value,
     form.date,
@@ -329,6 +360,9 @@ function goBack() {
           <a-button type="primary" @click="handleSubmit">保存</a-button>
         </a-form-item>
       </a-form>
+      <div v-if="ringNumberError" class="form-error-tip">
+        {{ ringNumberError }}
+      </div>
     </a-card>
 
     <a-card title="配对记录" :bordered="false" class="section">
@@ -340,6 +374,14 @@ function goBack() {
         :pagination="false"
         row-key="id"
       >
+        <template #partnerRingNumber="{ record }">
+          <template v-if="findPigeonByRingNumber(record.partnerRingNumber)">
+            <a-link @click="navigateToPigeon(record.partnerRingNumber)">
+              {{ record.partnerRingNumber }}
+            </a-link>
+          </template>
+          <span v-else>{{ record.partnerRingNumber }}</span>
+        </template>
         <template #operation="{ record }">
           <a-button
             type="outline"
@@ -487,5 +529,11 @@ function goBack() {
 .remark-actions {
   margin-top: 12px;
   text-align: right;
+}
+
+.form-error-tip {
+  margin-top: 8px;
+  color: #f53f3f;
+  font-size: 13px;
 }
 </style>

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { TableColumnData } from '@arco-design/web-vue'
 import { usePairingStore } from '@/stores/pairing'
 import pigeonsData from '@/mock/pigeons.json'
 import type { PairingRecord, Pigeon } from '@/types/pigeon'
+import { findPigeonByRingNumber } from '@/utils/pigeonValidation'
 
+const router = useRouter()
 const pairingStore = usePairingStore()
 const keyword = ref('')
 const pigeons = pigeonsData as Pigeon[]
@@ -52,10 +55,17 @@ const subtitle = computed(() => {
   return hasFilter ? `显示 ${filtered} / 共 ${total} 条` : `共 ${total} 条记录`
 })
 
+function navigateToPigeon(ringNumber: string) {
+  const pigeon = findPigeonByRingNumber(ringNumber)
+  if (pigeon) {
+    router.push(`/pigeon/${pigeon.id}`)
+  }
+}
+
 const columns: TableColumnData[] = [
-  { title: '本鸽环号', dataIndex: 'pigeonRingNumber', width: 160 },
+  { title: '本鸽环号', dataIndex: 'pigeonRingNumber', width: 160, slotName: 'pigeonRingNumber' },
   { title: '配对日期', dataIndex: 'date', width: 120 },
-  { title: '配对环号', dataIndex: 'partnerRingNumber', width: 160 },
+  { title: '配对环号', dataIndex: 'partnerRingNumber', width: 160, slotName: 'partnerRingNumber' },
 ]
 </script>
 
@@ -81,7 +91,24 @@ const columns: TableColumnData[] = [
         :pagination="{ pageSize: 10, showTotal: true }"
         row-key="id"
         :scroll="{ x: 600 }"
-      />
+      >
+        <template #pigeonRingNumber="{ record }">
+          <template v-if="findPigeonByRingNumber(record.pigeonRingNumber)">
+            <a-link @click="navigateToPigeon(record.pigeonRingNumber)">
+              {{ record.pigeonRingNumber }}
+            </a-link>
+          </template>
+          <span v-else>{{ record.pigeonRingNumber }}</span>
+        </template>
+        <template #partnerRingNumber="{ record }">
+          <template v-if="findPigeonByRingNumber(record.partnerRingNumber)">
+            <a-link @click="navigateToPigeon(record.partnerRingNumber)">
+              {{ record.partnerRingNumber }}
+            </a-link>
+          </template>
+          <span v-else>{{ record.partnerRingNumber }}</span>
+        </template>
+      </a-table>
     </a-card>
   </div>
 </template>
