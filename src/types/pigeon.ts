@@ -24,3 +24,12 @@ export interface RaceResult {
   distance: number
   pigeonId: string
 }
+
+/** 子代记录 */
+export interface OffspringRecord {
+  id: string
+  ringNumber: string
+  birthDate: string
+  fatherId: string
+  motherId: string
+}

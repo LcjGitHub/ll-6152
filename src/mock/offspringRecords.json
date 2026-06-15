@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "ringNumber": "2025-CN-101",
+    "birthDate": "2025-02-10",
+    "fatherId": "1",
+    "motherId": "2"
+  },
+  {
+    "id": "2",
+    "ringNumber": "2025-CN-102",
+    "birthDate": "2025-02-10",
+    "fatherId": "1",
+    "motherId": "4"
+  },
+  {
+    "id": "3",
+    "ringNumber": "2025-CN-103",
+    "birthDate": "2025-03-05",
+    "fatherId": "3",
+    "motherId": "6"
+  },
+  {
+    "id": "4",
+    "ringNumber": "2025-CN-104",
+    "birthDate": "2025-03-12",
+    "fatherId": "5",
+    "motherId": "8"
+  },
+  {
+    "id": "5",
+    "ringNumber": "2025-CN-105",
+    "birthDate": "2025-04-01",
+    "fatherId": "7",
+    "motherId": "10"
+  },
+  {
+    "id": "6",
+    "ringNumber": "2025-CN-106",
+    "birthDate": "2025-04-18",
+    "fatherId": "9",
+    "motherId": "12"
+  }
+]

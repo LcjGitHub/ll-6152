@@ -7,13 +7,16 @@ import { IconStar, IconStarFill } from '@arco-design/web-vue/es/icon'
 import pigeonsData from '@/mock/pigeons.json'
 import { usePairingStore } from '@/stores/pairing'
 import { useFavoriteStore } from '@/stores/favorite'
+import { useOffspringStore } from '@/stores/offspring'
 import type { Pigeon } from '@/types/pigeon'
 
 const route = useRoute()
 const router = useRouter()
 const pairingStore = usePairingStore()
 const favoriteStore = useFavoriteStore()
+const offspringStore = useOffspringStore()
 const formRef = ref<FormInstance>()
+const offspringFormRef = ref<FormInstance>()
 
 const pigeons = pigeonsData as Pigeon[]
 const pigeonId = computed(() => route.params.id as string)
@@ -49,7 +52,6 @@ const recordColumns: TableColumnData[] = [
   { title: '配对环号', dataIndex: 'partnerRingNumber', width: 180 },
 ]
 
-/** 提交配对记录 */
 async function handleSubmit() {
   try {
     await formRef.value?.validate()
@@ -66,6 +68,54 @@ async function handleSubmit() {
   form.date = ''
   form.partnerRingNumber = ''
   formRef.value?.clearValidate()
+}
+
+const offspringRecords = computed(() =>
+  offspringStore.getByParentId(pigeonId.value),
+)
+
+const offspringForm = reactive({
+  ringNumber: '',
+  birthDate: '',
+  partnerRingNumber: '',
+})
+
+const offspringRules = {
+  ringNumber: [{ required: true, message: '请输入子代环号' }],
+  birthDate: [{ required: true, message: '请选择出生日期' }],
+}
+
+const offspringColumns: TableColumnData[] = [
+  { title: '子代环号', dataIndex: 'ringNumber', width: 180 },
+  { title: '出生日期', dataIndex: 'birthDate', width: 160 },
+]
+
+async function handleOffspringSubmit() {
+  try {
+    await offspringFormRef.value?.validate()
+  } catch {
+    return
+  }
+
+  const partner = pigeons.find(
+    (p) => p.ringNumber === offspringForm.partnerRingNumber.trim(),
+  )
+  const currentPigeon = pigeon.value!
+  const isFather = currentPigeon.gender === '雄'
+  const fatherId = isFather ? pigeonId.value : (partner?.id ?? '')
+  const motherId = isFather ? (partner?.id ?? '') : pigeonId.value
+
+  offspringStore.addRecord(
+    offspringForm.ringNumber.trim(),
+    offspringForm.birthDate,
+    fatherId,
+    motherId,
+  )
+  Message.success('子代记录已保存')
+  offspringForm.ringNumber = ''
+  offspringForm.birthDate = ''
+  offspringForm.partnerRingNumber = ''
+  offspringFormRef.value?.clearValidate()
 }
 
 function goBack() {
@@ -153,6 +203,55 @@ function goBack() {
         v-else
         :columns="recordColumns"
         :data="pairingRecords"
+        :pagination="false"
+        row-key="id"
+      />
+    </a-card>
+
+    <a-card title="新增子代记录" :bordered="false" class="section">
+      <a-form
+        ref="offspringFormRef"
+        :model="offspringForm"
+        :rules="offspringRules"
+        layout="inline"
+        auto-label-width
+      >
+        <a-form-item field="ringNumber" label="子代环号">
+          <a-input
+            v-model="offspringForm.ringNumber"
+            placeholder="输入子代环号"
+            style="width: 200px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item field="birthDate" label="出生日期">
+          <a-date-picker
+            v-model="offspringForm.birthDate"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            style="width: 180px"
+          />
+        </a-form-item>
+        <a-form-item field="partnerRingNumber" label="配对对象编号">
+          <a-input
+            v-model="offspringForm.partnerRingNumber"
+            placeholder="输入配对对象环号"
+            style="width: 200px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleOffspringSubmit">保存</a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
+
+    <a-card title="子代列表" :bordered="false" class="section">
+      <a-empty v-if="offspringRecords.length === 0" description="暂无子代记录" />
+      <a-table
+        v-else
+        :columns="offspringColumns"
+        :data="offspringRecords"
         :pagination="false"
         row-key="id"
       />
