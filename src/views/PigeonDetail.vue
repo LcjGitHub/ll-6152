@@ -79,10 +79,12 @@ function handleDelete(recordId: string) {
     title: '确认删除',
     content: '确定要删除这条配对记录吗？',
     okButtonProps: { status: 'danger' },
-    onOk: () => {
-      pairingStore.deleteRecord(recordId)
-      Message.success('删除成功')
-    },
+    onOk: () =>
+      new Promise<void>((resolve) => {
+        pairingStore.deleteRecord(recordId)
+        Message.success('删除成功')
+        resolve()
+      }),
   })
 }
 
@@ -310,6 +312,7 @@ function goBack() {
             type="outline"
             status="danger"
             size="small"
+            :aria-label="`删除 ${record.date} 的配对记录 ${record.partnerRingNumber}`"
             @click="handleDelete(record.id)"
           >
             删除
