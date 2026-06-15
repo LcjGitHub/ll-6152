@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, h } from 'vue'
-import Fuse from 'fuse.js'
+import { computed, ref } from 'vue'
 import type { TableColumnData } from '@arco-design/web-vue'
-import { IconFile } from '@arco-design/web-vue/es/icon'
 import { usePairingStore } from '@/stores/pairing'
 import pigeonsData from '@/mock/pigeons.json'
 import type { PairingRecord, Pigeon } from '@/types/pigeon'
@@ -38,13 +36,13 @@ const displayRecords = computed((): PairingDisplay[] => {
 })
 
 const filteredRecords = computed(() => {
-  const q = keyword.value.trim()
+  const q = keyword.value.trim().toLowerCase()
   if (!q) return displayRecords.value
-  const fuse = new Fuse(displayRecords.value, {
-    keys: ['pigeonRingNumber', 'partnerRingNumber'],
-    threshold: 0.4,
-  })
-  return fuse.search(q).map((r) => r.item)
+  return displayRecords.value.filter(
+    (r) =>
+      r.pigeonRingNumber.toLowerCase().includes(q) ||
+      r.partnerRingNumber.toLowerCase().includes(q),
+  )
 })
 
 const subtitle = computed(() => {
@@ -59,11 +57,6 @@ const columns: TableColumnData[] = [
   { title: '配对日期', dataIndex: 'date', width: 120 },
   { title: '配对环号', dataIndex: 'partnerRingNumber', width: 160 },
 ]
-
-const emptyConfig = {
-  description: '暂无配对记录',
-  icon: () => h(IconFile, { style: { fontSize: '48px' } }),
-}
 </script>
 
 <template>
@@ -80,13 +73,14 @@ const emptyConfig = {
     </a-card>
 
     <a-card :bordered="false">
+      <a-empty v-if="filteredRecords.length === 0" description="暂无配对记录" />
       <a-table
+        v-else
         :columns="columns"
         :data="filteredRecords"
         :pagination="{ pageSize: 10, showTotal: true }"
         row-key="id"
         :scroll="{ x: 600 }"
-        :empty="emptyConfig"
       />
     </a-card>
   </div>
