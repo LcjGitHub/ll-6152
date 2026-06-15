@@ -144,15 +144,18 @@ const browseHistoryItems = computed(() =>
         <span class="browse-title">最近浏览</span>
       </template>
       <div class="browse-tags">
-        <a-tag
+        <span
           v-for="item in browseHistoryItems"
           :key="item.id"
-          color="arcoblue"
+          role="button"
+          :aria-label="`查看鸽子${item.ringNumber}详情`"
+          tabindex="0"
           class="browse-tag"
           @click="goDetail(item.id)"
+          @keydown.enter.space.prevent="goDetail(item.id)"
         >
           {{ item.ringNumber }}
-        </a-tag>
+        </span>
       </div>
     </a-card>
 
@@ -252,11 +255,24 @@ const browseHistoryItems = computed(() =>
 }
 
 .browse-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 22px;
+  color: rgb(var(--primary-6));
+  background-color: rgb(var(--primary-1));
   cursor: pointer;
+  outline: none;
   transition: opacity 0.2s;
 }
 
 .browse-tag:hover {
   opacity: 0.8;
+}
+
+.browse-tag:focus-visible {
+  box-shadow: 0 0 0 2px rgb(var(--primary-3));
 }
 </style>
