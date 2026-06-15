@@ -33,3 +33,12 @@ export interface OffspringRecord {
   fatherId: string
   motherId: string
 }
+
+/** 防疫记录 */
+export interface HealthRecord {
+  id: string
+  pigeonId: string
+  vaccineDate: string
+  vaccineName: string
+  remark: string
+}

@@ -8,6 +8,7 @@ import pigeonsData from '@/mock/pigeons.json'
 import { usePairingStore } from '@/stores/pairing'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useOffspringStore } from '@/stores/offspring'
+import { useHealthRecordStore } from '@/stores/healthRecord'
 import type { Pigeon } from '@/types/pigeon'
 
 const route = useRoute()
@@ -15,8 +16,10 @@ const router = useRouter()
 const pairingStore = usePairingStore()
 const favoriteStore = useFavoriteStore()
 const offspringStore = useOffspringStore()
+const healthRecordStore = useHealthRecordStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
+const healthFormRef = ref<FormInstance>()
 
 const pigeons = pigeonsData as Pigeon[]
 const pigeonId = computed(() => route.params.id as string)
@@ -104,8 +107,7 @@ const offspringColumns: TableColumnData[] = [
 async function handleOffspringSubmit() {
   let valid = true
   try {
-    const result = await offspringFormRef.value?.validate()
-    if (result === false) valid = false
+    await offspringFormRef.value?.validate()
   } catch {
     valid = false
   }
@@ -138,6 +140,47 @@ async function handleOffspringSubmit() {
   offspringForm.birthDate = ''
   offspringForm.partnerRingNumber = ''
   offspringFormRef.value?.clearValidate()
+}
+
+const healthRecords = computed(() =>
+  healthRecordStore.getByPigeonId(pigeonId.value),
+)
+
+const healthForm = reactive({
+  vaccineDate: '',
+  vaccineName: '',
+  remark: '',
+})
+
+const healthRules = {
+  vaccineDate: [{ required: true, message: '请选择防疫日期' }],
+  vaccineName: [{ required: true, message: '请输入疫苗名称' }],
+}
+
+const healthColumns: TableColumnData[] = [
+  { title: '防疫日期', dataIndex: 'vaccineDate', width: 160 },
+  { title: '疫苗名称', dataIndex: 'vaccineName', width: 200 },
+  { title: '备注', dataIndex: 'remark' },
+]
+
+async function handleHealthSubmit() {
+  try {
+    await healthFormRef.value?.validate()
+  } catch {
+    return
+  }
+
+  healthRecordStore.addRecord(
+    healthForm.vaccineDate,
+    healthForm.vaccineName.trim(),
+    healthForm.remark.trim(),
+    pigeonId.value,
+  )
+  Message.success('防疫记录已保存')
+  healthForm.vaccineDate = ''
+  healthForm.vaccineName = ''
+  healthForm.remark = ''
+  healthFormRef.value?.clearValidate()
 }
 
 function goBack() {
@@ -275,6 +318,53 @@ function goBack() {
           <a-button type="primary" @click="handleOffspringSubmit">保存</a-button>
         </a-form-item>
       </a-form>
+    </a-card>
+
+    <a-card title="防疫记录" :bordered="false" class="section">
+      <a-form
+        ref="healthFormRef"
+        :model="healthForm"
+        :rules="healthRules"
+        layout="inline"
+        auto-label-width
+      >
+        <a-form-item field="vaccineDate" label="防疫日期">
+          <a-date-picker
+            v-model="healthForm.vaccineDate"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            style="width: 180px"
+          />
+        </a-form-item>
+        <a-form-item field="vaccineName" label="疫苗名称">
+          <a-input
+            v-model="healthForm.vaccineName"
+            placeholder="输入疫苗名称"
+            style="width: 200px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item field="remark" label="备注">
+          <a-input
+            v-model="healthForm.remark"
+            placeholder="输入备注（可选）"
+            style="width: 240px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleHealthSubmit">保存</a-button>
+        </a-form-item>
+      </a-form>
+      <a-divider />
+      <a-empty v-if="healthRecords.length === 0" description="暂无防疫记录" />
+      <a-table
+        v-else
+        :columns="healthColumns"
+        :data="healthRecords"
+        :pagination="false"
+        row-key="id"
+      />
     </a-card>
   </div>
 
