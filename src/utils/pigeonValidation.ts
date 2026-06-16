@@ -14,3 +14,8 @@ export function findPigeonByRingNumber(ringNumber: string): Pigeon | undefined {
   if (!trimmed) return undefined
   return pigeons.find((p) => p.ringNumber === trimmed)
 }
+
+export function findPigeonById(pigeonId: string): Pigeon | undefined {
+  if (!pigeonId) return undefined
+  return pigeons.find((p) => p.id === pigeonId)
+}
