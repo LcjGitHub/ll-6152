@@ -1,3 +1,10 @@
+/** 鸽棚分区 */
+export interface LoftPartition {
+  zoneId: string
+  zoneName: string
+  capacity: number
+}
+
 /** 赛鸽档案 */
 export interface Pigeon {
   id: string
@@ -5,6 +12,7 @@ export interface Pigeon {
   featherColor: string
   gender: '雄' | '雌'
   pedigree: string
+  zoneId?: string
 }
 
 /** 配对记录 */

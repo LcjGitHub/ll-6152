@@ -1,0 +1,27 @@
+[
+  {
+    "zoneId": "Z001",
+    "zoneName": "A区-种鸽棚",
+    "capacity": 30
+  },
+  {
+    "zoneId": "Z002",
+    "zoneName": "B区-赛鸽棚",
+    "capacity": 50
+  },
+  {
+    "zoneId": "Z003",
+    "zoneName": "C区-幼鸽棚",
+    "capacity": 40
+  },
+  {
+    "zoneId": "Z004",
+    "zoneName": "D区-观察隔离棚",
+    "capacity": 15
+  },
+  {
+    "zoneId": "Z005",
+    "zoneName": "E区-训练预备棚",
+    "capacity": 25
+  }
+]

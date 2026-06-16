@@ -9,17 +9,20 @@ import type { Pigeon } from '@/types/pigeon'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
+import { useLoftPartitionStore } from '@/stores/loftPartition'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
+const loftPartitionStore = useLoftPartitionStore()
 const keyword = ref('')
 const onlyFavorite = ref(false)
 const pigeons = pigeonsData as Pigeon[]
 
 const genderFilter = ref('')
 const featherColorFilter = ref('')
+const zoneFilter = ref('')
 
 const genderOptions = computed(() => {
   const set = new Set(pigeons.map((p) => p.gender))
@@ -31,6 +34,8 @@ const featherColorOptions = computed(() => {
   return ['', ...Array.from(set)]
 })
 
+const zoneOptions = computed(() => loftPartitionStore.getZoneOptions)
+
 const filteredPigeons = computed(() => {
   let result = pigeons
   if (genderFilter.value) {
@@ -38,6 +43,12 @@ const filteredPigeons = computed(() => {
   }
   if (featherColorFilter.value) {
     result = result.filter((p) => p.featherColor === featherColorFilter.value)
+  }
+  if (zoneFilter.value) {
+    result = result.filter((p) => {
+      const effectiveZoneId = loftPartitionStore.getPigeonZoneId(p.id, p.zoneId)
+      return effectiveZoneId === zoneFilter.value
+    })
   }
   const q = keyword.value.trim()
   if (q) {
@@ -56,7 +67,7 @@ const filteredPigeons = computed(() => {
 const subtitle = computed(() => {
   const total = pigeons.length
   const filtered = filteredPigeons.value.length
-  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || !!genderFilter.value || !!featherColorFilter.value
+  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || !!genderFilter.value || !!featherColorFilter.value || !!zoneFilter.value
   return hasFilter ? `显示 ${filtered} / 共 ${total} 羽` : `共 ${total} 羽`
 })
 
@@ -64,6 +75,7 @@ const columns: TableColumnData[] = [
   { title: '环号', dataIndex: 'ringNumber', width: 160 },
   { title: '羽色', dataIndex: 'featherColor', width: 100 },
   { title: '性别', dataIndex: 'gender', width: 80 },
+  { title: '所属分区', slotName: 'zone', width: 160 },
   { title: '血统简述', dataIndex: 'pedigree', ellipsis: true, tooltip: true },
   { title: '备注', slotName: 'remark', width: 80, align: 'center' },
   { title: '收藏', slotName: 'favorite', width: 80, align: 'center' },
@@ -135,6 +147,19 @@ const browseHistoryItems = computed(() =>
               :value="c"
             >{{ c }}</a-option>
           </a-select>
+          <a-select
+            v-model="zoneFilter"
+            placeholder="所属分区"
+            allow-clear
+            style="width: 180px"
+          >
+            <a-option :value="''">全部</a-option>
+            <a-option
+              v-for="z in zoneOptions"
+              :key="z.value"
+              :value="z.value"
+            >{{ z.label }}</a-option>
+          </a-select>
         </a-space>
       </a-space>
     </a-card>
@@ -167,6 +192,11 @@ const browseHistoryItems = computed(() =>
         row-key="id"
         :scroll="{ x: 900 }"
       >
+        <template #zone="{ record }">
+          <a-tag :color="loftPartitionStore.getPigeonZoneId(record.id, record.zoneId) ? 'blue' : 'gray'">
+            {{ loftPartitionStore.getPigeonZoneName(record.id, record.zoneId) }}
+          </a-tag>
+        </template>
         <template #remark="{ record }">
           <a-tag
             :color="remarkStore.hasRemark(record.id) ? 'arcoblue' : 'gray'"

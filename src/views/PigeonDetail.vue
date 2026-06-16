@@ -12,6 +12,7 @@ import { useHealthRecordStore } from '@/stores/healthRecord'
 import { useHomeFlightStore } from '@/stores/homeFlight'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
+import { useLoftPartitionStore } from '@/stores/loftPartition'
 import type { Pigeon } from '@/types/pigeon'
 import { validateRingNumberExists, findPigeonByRingNumber } from '@/utils/pigeonValidation'
 import { useFormHandler } from '@/composables/useFormHandler'
@@ -25,6 +26,7 @@ const healthRecordStore = useHealthRecordStore()
 const homeFlightStore = useHomeFlightStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
+const loftPartitionStore = useLoftPartitionStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
 const healthFormRef = ref<FormInstance>()
@@ -316,6 +318,39 @@ function loadRemark() {
 
 watch(pigeonId, loadRemark, { immediate: true })
 
+const zoneEditing = ref(false)
+const selectedZoneId = ref('')
+const zoneOptions = computed(() => loftPartitionStore.getZoneOptions)
+
+const currentZoneId = computed(() => {
+  if (!pigeon.value) return undefined
+  return loftPartitionStore.getPigeonZoneId(pigeonId.value, pigeon.value.zoneId)
+})
+
+const currentZoneName = computed(() => {
+  if (!pigeon.value) return '未分配'
+  return loftPartitionStore.getPigeonZoneName(pigeonId.value, pigeon.value.zoneId)
+})
+
+function startEditZone() {
+  selectedZoneId.value = currentZoneId.value ?? ''
+  zoneEditing.value = true
+}
+
+function cancelEditZone() {
+  zoneEditing.value = false
+  selectedZoneId.value = ''
+}
+
+function saveZone() {
+  if (pigeonId.value && selectedZoneId.value) {
+    loftPartitionStore.setPigeonZone(pigeonId.value, selectedZoneId.value)
+    Message.success('所属分区已保存')
+    zoneEditing.value = false
+    selectedZoneId.value = ''
+  }
+}
+
 watch(pigeonId, (id) => {
   if (id) {
     browseHistoryStore.record(id)
@@ -371,6 +406,33 @@ function goBack() {
         </a-descriptions-item>
         <a-descriptions-item label="性别">
           {{ pigeon.gender }}
+        </a-descriptions-item>
+        <a-descriptions-item label="所属分区">
+          <template v-if="zoneEditing">
+            <a-space>
+              <a-select
+                v-model="selectedZoneId"
+                placeholder="请选择分区"
+                style="width: 200px"
+              >
+                <a-option
+                  v-for="z in zoneOptions"
+                  :key="z.value"
+                  :value="z.value"
+                >{{ z.label }}</a-option>
+              </a-select>
+              <a-button type="primary" size="small" @click="saveZone">保存</a-button>
+              <a-button size="small" @click="cancelEditZone">取消</a-button>
+            </a-space>
+          </template>
+          <template v-else>
+            <a-space>
+              <a-tag :color="currentZoneId ? 'blue' : 'gray'">
+                {{ currentZoneName }}
+              </a-tag>
+              <a-button type="text" size="small" @click="startEditZone">修改</a-button>
+            </a-space>
+          </template>
         </a-descriptions-item>
         <a-descriptions-item label="血统简述" :span="2">
           {{ pigeon.pedigree }}
