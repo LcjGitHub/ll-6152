@@ -235,6 +235,7 @@ const healthColumns: TableColumnData[] = [
   { title: '防疫日期', dataIndex: 'vaccineDate', width: 160 },
   { title: '疫苗名称', dataIndex: 'vaccineName', width: 200 },
   { title: '备注', dataIndex: 'remark' },
+  { title: '操作', width: 120, slotName: 'operation' },
 ]
 
 const healthFormHandler = useFormHandler({
@@ -260,6 +261,20 @@ async function handleHealthSubmit() {
       healthForm.remark.trim(),
       pigeonId.value,
     )
+  })
+}
+
+function handleHealthDelete(recordId: string, vaccineName: string) {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除疫苗「${vaccineName}」的防疫记录吗？`,
+    okButtonProps: { status: 'danger' },
+    onOk: () =>
+      new Promise<void>((resolve) => {
+        healthRecordStore.deleteRecord(recordId)
+        Message.success('删除成功')
+        resolve()
+      }),
   })
 }
 
@@ -802,7 +817,19 @@ function goBack() {
         :data="healthRecords"
         :pagination="false"
         row-key="id"
-      />
+      >
+        <template #operation="{ record }">
+          <a-button
+            type="outline"
+            status="danger"
+            size="small"
+            :aria-label="`删除 ${record.vaccineDate} 的防疫记录 ${record.vaccineName}`"
+            @click="handleHealthDelete(record.id, record.vaccineName)"
+          >
+            删除
+          </a-button>
+        </template>
+      </a-table>
     </a-card>
 
     <a-card title="家飞训练" :bordered="false" class="section">

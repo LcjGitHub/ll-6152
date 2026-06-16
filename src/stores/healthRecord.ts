@@ -31,6 +31,13 @@ export const useHealthRecordStore = defineStore('healthRecord', {
         remark,
       })
     },
+    /** 按记录编号删除防疫记录 */
+    deleteRecord(recordId: string) {
+      const index = this.records.findIndex((r) => r.id === recordId)
+      if (index > -1) {
+        this.records.splice(index, 1)
+      }
+    },
   },
   persist: true,
 })
