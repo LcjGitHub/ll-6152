@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import('@/views/PigeonList.vue'),
     },
     {
+      path: '/overview',
+      name: 'overview',
+      component: () => import('@/views/Overview.vue'),
+    },
+    {
       path: '/pigeon/:id',
       name: 'detail',
       component: () => import('@/views/PigeonDetail.vue'),

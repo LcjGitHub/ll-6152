@@ -5,6 +5,7 @@
         <div class="header-inner">
           <a href="/" class="logo" @click.prevent="$router.push('/')">赛鸽档案</a>
           <nav class="nav">
+            <router-link to="/overview" class="nav-link" exact-active-class="router-link-active">数据概览</router-link>
             <router-link to="/" class="nav-link" exact-active-class="router-link-active">鸽子列表</router-link>
             <router-link to="/race-results" class="nav-link" exact-active-class="router-link-active">比赛成绩</router-link>
             <router-link to="/pairing-summary" class="nav-link" exact-active-class="router-link-active">配对汇总</router-link>
