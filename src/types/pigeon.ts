@@ -13,6 +13,8 @@ export interface Pigeon {
   gender: '雄' | '雌'
   pedigree: string
   zoneId?: string
+  introductionDate?: string
+  introductionSource?: string
 }
 
 /** 配对记录 */

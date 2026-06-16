@@ -5,7 +5,9 @@
     "featherColor": "雨点",
     "gender": "雄",
     "pedigree": "父系：比利时 Janssen 血系；母系：荷兰 Snel 血系，短距速度型",
-    "zoneId": "Z001"
+    "zoneId": "Z001",
+    "introductionDate": "2023-03-15",
+    "introductionSource": "比利时名家拍卖"
   },
   {
     "id": "2",
@@ -13,7 +15,9 @@
     "featherColor": "灰",
     "gender": "雌",
     "pedigree": "父系：德国 Herman 血系；母系：比利时 De Rauw 血系，中距全能",
-    "zoneId": "Z001"
+    "zoneId": "Z001",
+    "introductionDate": "2023-05-20",
+    "introductionSource": "荷兰鸽展购入"
   },
   {
     "id": "3",
@@ -21,7 +25,9 @@
     "featherColor": "红轮",
     "gender": "雄",
     "pedigree": "父系：荷兰 Koopman 血系；母系：比利时 Busschaert 血系",
-    "zoneId": "Z002"
+    "zoneId": "Z002",
+    "introductionDate": "2023-08-10",
+    "introductionSource": "国内公棚拍卖"
   },
   {
     "id": "4",
@@ -29,7 +35,9 @@
     "featherColor": "石板",
     "gender": "雌",
     "pedigree": "父系：比利时 Verkerk 血系；母系：荷兰 Janssen 血系，长距耐力型",
-    "zoneId": "Z002"
+    "zoneId": "Z002",
+    "introductionDate": "2023-11-05",
+    "introductionSource": "好友赠送"
   },
   {
     "id": "5",
@@ -37,7 +45,9 @@
     "featherColor": "花头",
     "gender": "雄",
     "pedigree": "父系：比利时 Cools 血系；母系：德国 Wegge 血系，700公里级",
-    "zoneId": "Z003"
+    "zoneId": "Z003",
+    "introductionDate": "2024-01-18",
+    "introductionSource": "比利时名家拍卖"
   },
   {
     "id": "6",
@@ -45,7 +55,9 @@
     "featherColor": "深雨点",
     "gender": "雌",
     "pedigree": "父系：荷兰 Snel 血系；母系：比利时 Janssen 血系，500公里稳定",
-    "zoneId": "Z003"
+    "zoneId": "Z003",
+    "introductionDate": "2024-02-22",
+    "introductionSource": "荷兰鸽展购入"
   },
   {
     "id": "7",
@@ -53,7 +65,9 @@
     "featherColor": "灰白条",
     "gender": "雄",
     "pedigree": "父系：比利时 De Rauw 血系；母系：荷兰 Koopman 血系",
-    "zoneId": "Z002"
+    "zoneId": "Z002",
+    "introductionDate": "2024-04-10",
+    "introductionSource": "国内公棚拍卖"
   },
   {
     "id": "8",
@@ -61,7 +75,9 @@
     "featherColor": "浅雨点",
     "gender": "雌",
     "pedigree": "父系：德国 Herman 血系；母系：比利时 Busschaert 血系，300公里快速",
-    "zoneId": "Z005"
+    "zoneId": "Z005",
+    "introductionDate": "2024-06-01",
+    "introductionSource": "好友赠送"
   },
   {
     "id": "9",
@@ -69,7 +85,9 @@
     "featherColor": "绛",
     "gender": "雄",
     "pedigree": "父系：比利时 Verkerk 血系；母系：荷兰 Janssen 血系，1000公里级",
-    "zoneId": "Z004"
+    "zoneId": "Z004",
+    "introductionDate": "2024-07-15",
+    "introductionSource": "比利时名家拍卖"
   },
   {
     "id": "10",
@@ -77,7 +95,9 @@
     "featherColor": "灰",
     "gender": "雌",
     "pedigree": "父系：荷兰 Koopman 血系；母系：比利时 Cools 血系，中短距全能",
-    "zoneId": "Z005"
+    "zoneId": "Z005",
+    "introductionDate": "2024-09-08",
+    "introductionSource": "荷兰鸽展购入"
   },
   {
     "id": "11",
@@ -85,7 +105,9 @@
     "featherColor": "雨点白条",
     "gender": "雄",
     "pedigree": "父系：比利时 Janssen 血系；母系：德国 Wegge 血系，600公里级",
-    "zoneId": "Z002"
+    "zoneId": "Z002",
+    "introductionDate": "2024-10-20",
+    "introductionSource": "国内公棚拍卖"
   },
   {
     "id": "12",
@@ -93,6 +115,8 @@
     "featherColor": "花",
     "gender": "雌",
     "pedigree": "父系：荷兰 Snel 血系；母系：比利时 De Rauw 血系，400公里快速",
-    "zoneId": "Z003"
+    "zoneId": "Z003",
+    "introductionDate": "2024-12-01",
+    "introductionSource": "好友赠送"
   }
 ]

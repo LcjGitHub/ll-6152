@@ -12,6 +12,7 @@ import { useHealthRecordStore } from '@/stores/healthRecord'
 import { useHomeFlightStore } from '@/stores/homeFlight'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
+import { useIntroductionInfoStore } from '@/stores/introductionInfo'
 import { useLoftPartitionStore } from '@/stores/loftPartition'
 import { useMedicationPlanStore } from '@/stores/medicationPlan'
 import type { Pigeon } from '@/types/pigeon'
@@ -27,6 +28,7 @@ const healthRecordStore = useHealthRecordStore()
 const homeFlightStore = useHomeFlightStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
+const introductionInfoStore = useIntroductionInfoStore()
 const loftPartitionStore = useLoftPartitionStore()
 const medicationPlanStore = useMedicationPlanStore()
 const formRef = ref<FormInstance>()
@@ -442,6 +444,42 @@ function saveZone() {
   }
 }
 
+const introEditing = ref(false)
+const introEditDate = ref('')
+const introEditSource = ref('')
+
+const currentIntroDate = computed(() => {
+  if (!pigeon.value) return ''
+  return introductionInfoStore.getIntroductionDate(pigeonId.value, pigeon.value.introductionDate)
+})
+
+const currentIntroSource = computed(() => {
+  if (!pigeon.value) return ''
+  return introductionInfoStore.getIntroductionSource(pigeonId.value, pigeon.value.introductionSource)
+})
+
+function startEditIntro() {
+  introEditDate.value = currentIntroDate.value
+  introEditSource.value = currentIntroSource.value
+  introEditing.value = true
+}
+
+function cancelEditIntro() {
+  introEditing.value = false
+  introEditDate.value = ''
+  introEditSource.value = ''
+}
+
+function saveIntro() {
+  if (pigeonId.value) {
+    introductionInfoStore.setIntroductionInfo(pigeonId.value, introEditDate.value, introEditSource.value.trim())
+    Message.success('引进信息已保存')
+    introEditing.value = false
+    introEditDate.value = ''
+    introEditSource.value = ''
+  }
+}
+
 watch(pigeonId, (id) => {
   if (id) {
     browseHistoryStore.record(id)
@@ -522,6 +560,42 @@ function goBack() {
                 {{ currentZoneName }}
               </a-tag>
               <a-button type="text" size="small" @click="startEditZone">修改</a-button>
+            </a-space>
+          </template>
+        </a-descriptions-item>
+        <a-descriptions-item label="引进日期">
+          <template v-if="introEditing">
+            <a-date-picker
+              v-model="introEditDate"
+              value-format="YYYY-MM-DD"
+              placeholder="选择引进日期"
+              style="width: 180px"
+            />
+          </template>
+          <template v-else>
+            <a-space>
+              <span>{{ currentIntroDate || '未记录' }}</span>
+              <a-button type="text" size="small" @click="startEditIntro">修改</a-button>
+            </a-space>
+          </template>
+        </a-descriptions-item>
+        <a-descriptions-item label="引进来源">
+          <template v-if="introEditing">
+            <a-space>
+              <a-input
+                v-model="introEditSource"
+                placeholder="输入引进来源"
+                style="width: 200px"
+                allow-clear
+              />
+              <a-button type="primary" size="small" @click="saveIntro">保存</a-button>
+              <a-button size="small" @click="cancelEditIntro">取消</a-button>
+            </a-space>
+          </template>
+          <template v-else>
+            <a-space>
+              <span>{{ currentIntroSource || '未记录' }}</span>
+              <a-button type="text" size="small" @click="startEditIntro">修改</a-button>
             </a-space>
           </template>
         </a-descriptions-item>

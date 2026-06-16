@@ -10,12 +10,14 @@ import { useFavoriteStore } from '@/stores/favorite'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import { useLoftPartitionStore } from '@/stores/loftPartition'
+import { useIntroductionInfoStore } from '@/stores/introductionInfo'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
 const loftPartitionStore = useLoftPartitionStore()
+const introductionInfoStore = useIntroductionInfoStore()
 const keyword = ref('')
 const onlyFavorite = ref(false)
 const pigeons = pigeonsData as Pigeon[]
@@ -23,6 +25,7 @@ const pigeons = pigeonsData as Pigeon[]
 const genderFilter = ref('')
 const featherColorFilter = ref('')
 const zoneFilter = ref('')
+const introductionSourceFilter = ref('')
 
 const genderOptions = computed(() => {
   const set = new Set(pigeons.map((p) => p.gender))
@@ -36,6 +39,14 @@ const featherColorOptions = computed(() => {
 
 const zoneOptions = computed(() => loftPartitionStore.getZoneOptions)
 
+const introductionSourceOptions = computed(() => {
+  const sources = pigeons.map((p) =>
+    introductionInfoStore.getIntroductionSource(p.id, p.introductionSource),
+  )
+  const set = new Set(sources.filter((s) => s && s.trim()))
+  return ['', ...Array.from(set)]
+})
+
 const filteredPigeons = computed(() => {
   let result = pigeons
   if (genderFilter.value) {
@@ -48,6 +59,12 @@ const filteredPigeons = computed(() => {
     result = result.filter((p) => {
       const effectiveZoneId = loftPartitionStore.getPigeonZoneId(p.id, p.zoneId)
       return effectiveZoneId === zoneFilter.value
+    })
+  }
+  if (introductionSourceFilter.value) {
+    result = result.filter((p) => {
+      const source = introductionInfoStore.getIntroductionSource(p.id, p.introductionSource)
+      return source === introductionSourceFilter.value
     })
   }
   const q = keyword.value.trim()
@@ -67,7 +84,7 @@ const filteredPigeons = computed(() => {
 const subtitle = computed(() => {
   const total = pigeons.length
   const filtered = filteredPigeons.value.length
-  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || !!genderFilter.value || !!featherColorFilter.value || !!zoneFilter.value
+  const hasFilter = keyword.value.trim() !== '' || onlyFavorite.value || !!genderFilter.value || !!featherColorFilter.value || !!zoneFilter.value || !!introductionSourceFilter.value
   return hasFilter ? `显示 ${filtered} / 共 ${total} 羽` : `共 ${total} 羽`
 })
 
@@ -76,6 +93,7 @@ const columns: TableColumnData[] = [
   { title: '羽色', dataIndex: 'featherColor', width: 100 },
   { title: '性别', dataIndex: 'gender', width: 80 },
   { title: '所属分区', slotName: 'zone', width: 160 },
+  { title: '引进来源', slotName: 'introductionSource', width: 140 },
   { title: '血统简述', dataIndex: 'pedigree', ellipsis: true, tooltip: true },
   { title: '备注', slotName: 'remark', width: 80, align: 'center' },
   { title: '收藏', slotName: 'favorite', width: 80, align: 'center' },
@@ -160,6 +178,19 @@ const browseHistoryItems = computed(() =>
               :value="z.value"
             >{{ z.label }}</a-option>
           </a-select>
+          <a-select
+            v-model="introductionSourceFilter"
+            placeholder="引进来源"
+            allow-clear
+            style="width: 160px"
+          >
+            <a-option :value="''">全部</a-option>
+            <a-option
+              v-for="s in introductionSourceOptions.filter((v) => v !== '')"
+              :key="s"
+              :value="s"
+            >{{ s }}</a-option>
+          </a-select>
         </a-space>
       </a-space>
     </a-card>
@@ -196,6 +227,9 @@ const browseHistoryItems = computed(() =>
           <a-tag :color="loftPartitionStore.getPigeonZoneId(record.id, record.zoneId) ? 'blue' : 'gray'">
             {{ loftPartitionStore.getPigeonZoneName(record.id, record.zoneId) }}
           </a-tag>
+        </template>
+        <template #introductionSource="{ record }">
+          <span>{{ introductionInfoStore.getIntroductionSource(record.id, record.introductionSource) || '-' }}</span>
         </template>
         <template #remark="{ record }">
           <a-tag
