@@ -154,6 +154,7 @@ const offspringRules = {
 const offspringColumns: TableColumnData[] = [
   { title: '子代环号', dataIndex: 'ringNumber', width: 180 },
   { title: '出生日期', dataIndex: 'birthDate', width: 160 },
+  { title: '操作', width: 120, slotName: 'operation' },
 ]
 
 const offspringFormHandler = useFormHandler({
@@ -187,6 +188,20 @@ async function handleOffspringSubmit() {
       fatherId,
       motherId,
     )
+  })
+}
+
+function handleOffspringDelete(recordId: string, ringNumber: string) {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除子代 ${ringNumber} 的记录吗？`,
+    okButtonProps: { status: 'danger' },
+    onOk: () =>
+      new Promise<void>((resolve) => {
+        offspringStore.deleteRecord(recordId)
+        Message.success('删除成功')
+        resolve()
+      }),
   })
 }
 
@@ -692,7 +707,19 @@ function goBack() {
         :data="offspringRecords"
         :pagination="false"
         row-key="id"
-      />
+      >
+        <template #operation="{ record }">
+          <a-button
+            type="outline"
+            status="danger"
+            size="small"
+            :aria-label="`删除子代 ${record.ringNumber} 记录`"
+            @click="handleOffspringDelete(record.id, record.ringNumber)"
+          >
+            删除
+          </a-button>
+        </template>
+      </a-table>
       <a-divider />
       <a-form
         ref="offspringFormRef"

@@ -28,6 +28,12 @@ export const useOffspringStore = defineStore('offspring', {
         motherId,
       })
     },
+    deleteRecord(recordId: string) {
+      const index = this.records.findIndex((r) => r.id === recordId)
+      if (index > -1) {
+        this.records.splice(index, 1)
+      }
+    },
   },
   persist: true,
 })
