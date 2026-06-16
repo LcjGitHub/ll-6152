@@ -94,7 +94,10 @@ const columns: TableColumnData[] = [
       >
         <template #pigeonRingNumber="{ record }">
           <template v-if="findPigeonByRingNumber(record.pigeonRingNumber)">
-            <a-link @click="navigateToPigeon(record.pigeonRingNumber)">
+            <a-link
+              :aria-label="`查看鸽子 ${record.pigeonRingNumber} 详情`"
+              @click="navigateToPigeon(record.pigeonRingNumber)"
+            >
               {{ record.pigeonRingNumber }}
             </a-link>
           </template>
@@ -102,7 +105,10 @@ const columns: TableColumnData[] = [
         </template>
         <template #partnerRingNumber="{ record }">
           <template v-if="findPigeonByRingNumber(record.partnerRingNumber)">
-            <a-link @click="navigateToPigeon(record.partnerRingNumber)">
+            <a-link
+              :aria-label="`查看鸽子 ${record.partnerRingNumber} 详情`"
+              @click="navigateToPigeon(record.partnerRingNumber)"
+            >
               {{ record.partnerRingNumber }}
             </a-link>
           </template>
