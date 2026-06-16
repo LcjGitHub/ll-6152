@@ -13,6 +13,7 @@ import { useHomeFlightStore } from '@/stores/homeFlight'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import { useLoftPartitionStore } from '@/stores/loftPartition'
+import { useMedicationPlanStore } from '@/stores/medicationPlan'
 import type { Pigeon } from '@/types/pigeon'
 import { validateRingNumberExists, findPigeonByRingNumber } from '@/utils/pigeonValidation'
 import { useFormHandler } from '@/composables/useFormHandler'
@@ -27,10 +28,12 @@ const homeFlightStore = useHomeFlightStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
 const loftPartitionStore = useLoftPartitionStore()
+const medicationPlanStore = useMedicationPlanStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
 const healthFormRef = ref<FormInstance>()
 const homeFlightFormRef = ref<FormInstance>()
+const medicationPlanFormRef = ref<FormInstance>()
 
 const pigeons = pigeonsData as Pigeon[]
 const pigeonId = computed(() => route.params.id as string)
@@ -303,6 +306,94 @@ async function handleHomeFlightSubmit() {
       homeFlightForm.remark.trim(),
       pigeonId.value,
     )
+  })
+}
+
+const medicationPlans = computed(() =>
+  medicationPlanStore.getByPigeonId(pigeonId.value),
+)
+
+const medicationPlanForm = reactive({
+  medicineName: '',
+  planDate: '',
+  intervalDays: undefined as number | undefined,
+})
+
+const medicationPlanRules = {
+  medicineName: [
+    {
+      required: true,
+      validator: (value: string, cb: (error?: string) => void) => {
+        if (!value || !value.trim()) {
+          cb('请输入药品名称')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
+  planDate: [{ required: true, message: '请选择计划用药日期' }],
+  intervalDays: [
+    {
+      validator: (value: number | undefined, cb: (error?: string) => void) => {
+        if (value !== undefined && value < 0) {
+          cb('间隔天数不能为负数')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
+}
+
+const medicationPlanColumns: TableColumnData[] = [
+  { title: '药品名称', dataIndex: 'medicineName', width: 200 },
+  { title: '计划用药日期', dataIndex: 'planDate', width: 160 },
+  { title: '用药间隔(天)', dataIndex: 'intervalDays', width: 140 },
+  {
+    title: '下次用药日期',
+    dataIndex: 'nextDate',
+    width: 160,
+    slotName: 'nextDate',
+  },
+]
+
+function calculateNextDate(planDate: string, intervalDays: number): string {
+  if (!planDate || !intervalDays) {
+    return ''
+  }
+  const date = new Date(planDate)
+  date.setDate(date.getDate() + intervalDays)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const medicationPlanFormHandler = useFormHandler({
+  formRef: medicationPlanFormRef,
+  formData: medicationPlanForm,
+  successMessage: '用药计划已保存',
+  extraValidate: () => {
+    if (!medicationPlanForm.medicineName || !medicationPlanForm.medicineName.trim()) {
+      return false
+    }
+    if (!medicationPlanForm.planDate) {
+      return false
+    }
+    return true
+  },
+})
+
+async function handleMedicationPlanSubmit() {
+  await medicationPlanFormHandler.submit(() => {
+    medicationPlanStore.addPlan(
+      medicationPlanForm.medicineName.trim(),
+      medicationPlanForm.planDate,
+      medicationPlanForm.intervalDays ?? 0,
+      pigeonId.value,
+    )
+    medicationPlanForm.intervalDays = undefined
   })
 }
 
@@ -664,6 +755,57 @@ function goBack() {
         </a-form-item>
         <a-form-item>
           <a-button type="primary" @click="handleHomeFlightSubmit">保存</a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
+
+    <a-card title="用药计划" :bordered="false" class="section">
+      <a-empty v-if="medicationPlans.length === 0" description="暂无用药计划" />
+      <a-table
+        v-else
+        :columns="medicationPlanColumns"
+        :data="medicationPlans"
+        :pagination="false"
+        row-key="id"
+      >
+        <template #nextDate="{ record }">
+          {{ calculateNextDate(record.planDate, record.intervalDays) || '-' }}
+        </template>
+      </a-table>
+      <a-divider />
+      <a-form
+        ref="medicationPlanFormRef"
+        :model="medicationPlanForm"
+        :rules="medicationPlanRules"
+        layout="inline"
+        auto-label-width
+      >
+        <a-form-item field="medicineName" label="药品名称">
+          <a-input
+            v-model="medicationPlanForm.medicineName"
+            placeholder="输入药品名称"
+            style="width: 240px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item field="planDate" label="计划用药日期">
+          <a-date-picker
+            v-model="medicationPlanForm.planDate"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            style="width: 180px"
+          />
+        </a-form-item>
+        <a-form-item field="intervalDays" label="间隔天数">
+          <a-input-number
+            v-model="medicationPlanForm.intervalDays"
+            :min="0"
+            placeholder="天数"
+            style="width: 140px"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleMedicationPlanSubmit">保存</a-button>
         </a-form-item>
       </a-form>
     </a-card>

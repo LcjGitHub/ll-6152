@@ -67,3 +67,12 @@ export interface HomeFlightRecord {
   location: string
   remark: string
 }
+
+/** 用药计划 */
+export interface MedicationPlan {
+  id: string
+  pigeonId: string
+  medicineName: string
+  planDate: string
+  intervalDays: number
+}

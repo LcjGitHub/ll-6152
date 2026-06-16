@@ -1,0 +1,72 @@
+[
+  {
+    "id": "1",
+    "pigeonId": "1",
+    "medicineName": "阿莫西林可溶性粉",
+    "planDate": "2024-06-01",
+    "intervalDays": 30
+  },
+  {
+    "id": "2",
+    "pigeonId": "1",
+    "medicineName": "维生素电解质",
+    "planDate": "2024-05-15",
+    "intervalDays": 15
+  },
+  {
+    "id": "3",
+    "pigeonId": "2",
+    "medicineName": "盐酸左旋咪唑",
+    "planDate": "2024-04-20",
+    "intervalDays": 90
+  },
+  {
+    "id": "4",
+    "pigeonId": "3",
+    "medicineName": "阿莫西林可溶性粉",
+    "planDate": "2024-06-10",
+    "intervalDays": 30
+  },
+  {
+    "id": "5",
+    "pigeonId": "3",
+    "medicineName": "多西环素",
+    "planDate": "2024-05-01",
+    "intervalDays": 60
+  },
+  {
+    "id": "6",
+    "pigeonId": "4",
+    "medicineName": "维生素电解质",
+    "planDate": "2024-06-05",
+    "intervalDays": 15
+  },
+  {
+    "id": "7",
+    "pigeonId": "5",
+    "medicineName": "盐酸左旋咪唑",
+    "planDate": "2024-03-15",
+    "intervalDays": 90
+  },
+  {
+    "id": "8",
+    "pigeonId": "6",
+    "medicineName": "阿莫西林可溶性粉",
+    "planDate": "2024-06-15",
+    "intervalDays": 30
+  },
+  {
+    "id": "9",
+    "pigeonId": "7",
+    "medicineName": "多西环素",
+    "planDate": "2024-05-20",
+    "intervalDays": 60
+  },
+  {
+    "id": "10",
+    "pigeonId": "9",
+    "medicineName": "维生素电解质",
+    "planDate": "2024-06-01",
+    "intervalDays": 15
+  }
+]
