@@ -49,3 +49,13 @@ export interface PigeonRemark {
   content: string
   updatedAt: string
 }
+
+/** 家飞训练记录 */
+export interface HomeFlightRecord {
+  id: string
+  pigeonId: string
+  trainingDate: string
+  durationMinutes: number
+  location: string
+  remark: string
+}

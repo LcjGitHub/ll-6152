@@ -9,6 +9,7 @@ import { usePairingStore } from '@/stores/pairing'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useOffspringStore } from '@/stores/offspring'
 import { useHealthRecordStore } from '@/stores/healthRecord'
+import { useHomeFlightStore } from '@/stores/homeFlight'
 import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import type { Pigeon } from '@/types/pigeon'
@@ -21,11 +22,13 @@ const pairingStore = usePairingStore()
 const favoriteStore = useFavoriteStore()
 const offspringStore = useOffspringStore()
 const healthRecordStore = useHealthRecordStore()
+const homeFlightStore = useHomeFlightStore()
 const remarkStore = useRemarkStore()
 const browseHistoryStore = useBrowseHistoryStore()
 const formRef = ref<FormInstance>()
 const offspringFormRef = ref<FormInstance>()
 const healthFormRef = ref<FormInstance>()
+const homeFlightFormRef = ref<FormInstance>()
 
 const pigeons = pigeonsData as Pigeon[]
 const pigeonId = computed(() => route.params.id as string)
@@ -233,6 +236,69 @@ async function handleHealthSubmit() {
       healthForm.vaccineDate,
       healthForm.vaccineName.trim(),
       healthForm.remark.trim(),
+      pigeonId.value,
+    )
+  })
+}
+
+const homeFlightRecords = computed(() =>
+  homeFlightStore.getByPigeonId(pigeonId.value),
+)
+
+const homeFlightForm = reactive({
+  trainingDate: '',
+  durationMinutes: '',
+  location: '',
+  remark: '',
+})
+
+const homeFlightRules = {
+  trainingDate: [{ required: true, message: '请选择训练日期' }],
+  durationMinutes: [
+    {
+      required: true,
+      validator: (value: string, cb: (error?: string) => void) => {
+        if (!value || !value.trim()) {
+          cb('请输入训练时长')
+        } else if (isNaN(Number(value)) || Number(value) <= 0) {
+          cb('训练时长必须为正数')
+        } else {
+          cb()
+        }
+      },
+    },
+  ],
+}
+
+const homeFlightColumns: TableColumnData[] = [
+  { title: '训练日期', dataIndex: 'trainingDate', width: 160 },
+  { title: '训练时长(分钟)', dataIndex: 'durationMinutes', width: 140 },
+  { title: '放飞地点', dataIndex: 'location', width: 200 },
+  { title: '备注', dataIndex: 'remark' },
+]
+
+const homeFlightFormHandler = useFormHandler({
+  formRef: homeFlightFormRef,
+  formData: homeFlightForm,
+  successMessage: '家飞训练记录已保存',
+  extraValidate: () => {
+    if (!homeFlightForm.trainingDate) {
+      return false
+    }
+    if (!homeFlightForm.durationMinutes || !homeFlightForm.durationMinutes.trim()) {
+      return false
+    }
+    return true
+  },
+})
+
+async function handleHomeFlightSubmit() {
+  await homeFlightFormHandler.submit(() => {
+    homeFlightStore.addRecord(
+      homeFlightForm.trainingDate,
+      Number(homeFlightForm.durationMinutes),
+      homeFlightForm.location.trim(),
+      homeFlightForm.remark.trim(),
       pigeonId.value,
     )
   })
@@ -483,6 +549,61 @@ function goBack() {
         :pagination="false"
         row-key="id"
       />
+    </a-card>
+
+    <a-card title="家飞训练" :bordered="false" class="section">
+      <a-empty v-if="homeFlightRecords.length === 0" description="暂无家飞训练记录" />
+      <a-table
+        v-else
+        :columns="homeFlightColumns"
+        :data="homeFlightRecords"
+        :pagination="false"
+        row-key="id"
+      />
+      <a-divider />
+      <a-form
+        ref="homeFlightFormRef"
+        :model="homeFlightForm"
+        :rules="homeFlightRules"
+        layout="inline"
+        auto-label-width
+      >
+        <a-form-item field="trainingDate" label="训练日期">
+          <a-date-picker
+            v-model="homeFlightForm.trainingDate"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            style="width: 180px"
+          />
+        </a-form-item>
+        <a-form-item field="durationMinutes" label="训练时长">
+          <a-input
+            v-model="homeFlightForm.durationMinutes"
+            placeholder="分钟"
+            style="width: 120px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item field="location" label="放飞地点">
+          <a-input
+            v-model="homeFlightForm.location"
+            placeholder="输入放飞地点"
+            style="width: 200px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item field="remark" label="备注">
+          <a-input
+            v-model="homeFlightForm.remark"
+            placeholder="输入备注（可选）"
+            style="width: 240px"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleHomeFlightSubmit">保存</a-button>
+        </a-form-item>
+      </a-form>
     </a-card>
   </div>
 

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "pigeonId": "1",
+    "trainingDate": "2024-02-10",
+    "durationMinutes": 45,
+    "location": "鸽舍上空",
+    "remark": "状态良好，飞行稳定"
+  },
+  {
+    "id": "2",
+    "pigeonId": "1",
+    "trainingDate": "2024-02-15",
+    "durationMinutes": 60,
+    "location": "东郊公园",
+    "remark": "放飞后快速归巢"
+  },
+  {
+    "id": "3",
+    "pigeonId": "1",
+    "trainingDate": "2024-02-20",
+    "durationMinutes": 90,
+    "location": "南郊湿地",
+    "remark": "长距离训练，归巢时间正常"
+  },
+  {
+    "id": "4",
+    "pigeonId": "2",
+    "trainingDate": "2024-02-12",
+    "durationMinutes": 30,
+    "location": "鸽舍上空",
+    "remark": "初次家飞，适应良好"
+  },
+  {
+    "id": "5",
+    "pigeonId": "2",
+    "trainingDate": "2024-02-18",
+    "durationMinutes": 50,
+    "location": "北郊山地",
+    "remark": "山地训练，耐力不错"
+  },
+  {
+    "id": "6",
+    "pigeonId": "3",
+    "trainingDate": "2024-02-08",
+    "durationMinutes": 40,
+    "location": "鸽舍上空",
+    "remark": ""
+  },
+  {
+    "id": "7",
+    "pigeonId": "3",
+    "trainingDate": "2024-02-14",
+    "durationMinutes": 75,
+    "location": "西郊农田",
+    "remark": "田间飞行，归巢迅速"
+  },
+  {
+    "id": "8",
+    "pigeonId": "3",
+    "trainingDate": "2024-02-22",
+    "durationMinutes": 100,
+    "location": "远郊湖区",
+    "remark": "长距离耐力训练"
+  }
+]
