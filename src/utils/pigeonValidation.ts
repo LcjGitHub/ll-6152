@@ -19,3 +19,10 @@ export function findPigeonById(pigeonId: string): Pigeon | undefined {
   if (!pigeonId) return undefined
   return pigeons.find((p) => p.id === pigeonId)
 }
+
+export function mapPigeonIdsToRingNumbers(pigeonIds: string[]): string[] {
+  if (!pigeonIds || pigeonIds.length === 0) return []
+  return pigeonIds
+    .map((id) => findPigeonById(id)?.ringNumber)
+    .filter((ringNumber): ringNumber is string => !!ringNumber)
+}

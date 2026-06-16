@@ -11,6 +11,8 @@ import { useRemarkStore } from '@/stores/remark'
 import { useBrowseHistoryStore } from '@/stores/browseHistory'
 import { useLoftPartitionStore } from '@/stores/loftPartition'
 import { useIntroductionInfoStore } from '@/stores/introductionInfo'
+import { mapPigeonIdsToRingNumbers } from '@/utils/pigeonValidation'
+import { Message } from '@arco-design/web-vue'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
@@ -108,6 +110,34 @@ function toggleFavorite(id: string) {
   favoriteStore.toggleFavorite(id)
 }
 
+const hasFavorites = computed(() => favoriteStore.favoriteCount > 0)
+
+const favoriteRingNumbers = computed(() =>
+  mapPigeonIdsToRingNumbers(favoriteStore.favoritePigeonIds),
+)
+
+async function copyFavoriteList() {
+  if (!hasFavorites.value) {
+    Message.warning('暂无收藏')
+    return
+  }
+  const text = favoriteRingNumbers.value.join(',')
+  try {
+    await navigator.clipboard.writeText(text)
+    Message.success('复制成功')
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+    Message.success('复制成功')
+  }
+}
+
 const browseHistoryItems = computed(() =>
   browseHistoryStore.pigeonIds
     .map((id) => {
@@ -136,6 +166,16 @@ const browseHistoryItems = computed(() =>
             <span class="switch-label">
               {{ onlyFavorite ? '仅看收藏' : '全部' }}
             </span>
+            <a-tooltip content="复制收藏清单" :mini="true">
+              <a-button
+                type="text"
+                size="small"
+                :disabled="!hasFavorites"
+                @click="copyFavoriteList"
+              >
+                复制收藏清单
+              </a-button>
+            </a-tooltip>
           </a-space>
         </a-space>
         <a-space>

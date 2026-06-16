@@ -13,6 +13,8 @@ export const useFavoriteStore = defineStore('favorite', {
       (state) =>
       (pigeonId: string): boolean =>
         state.pigeonIds.includes(pigeonId),
+    favoritePigeonIds: (state): string[] => state.pigeonIds,
+    favoriteCount: (state): number => state.pigeonIds.length,
   },
   actions: {
     toggleFavorite(pigeonId: string) {
